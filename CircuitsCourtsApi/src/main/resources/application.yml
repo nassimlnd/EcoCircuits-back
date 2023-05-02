@@ -1,9 +1,26 @@
 spring:
   application:
     name: CircuitsCourtsAPI
+  datasource:
+      url: jdbc:mysql://localhost:3306/circuits_courts?useSSL=false&serverTimezone=UTC
+      username: root
+      password:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    #show-sql: true
 
-    datasource:
-        url: jdbc:mysql://localhost:3306/circuits_courts?useSSL=false&serverTimezone=UTC
-        username: root
-        password:
-        driver-class-name: com.mysql.cj.jdbc.Driver
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL5Dialect
+
+logging:
+  level:
+    root: error
+    com.lifat: info
+    org.springframework.boot.web.embedded.tomcat: info
+
+server:
+  port: 9020
