@@ -14,4 +14,10 @@ public class Produit {
 
     @Column(name = "libelle")
     private String libelle;
+
+    @Column(name = "prix")
+    private Double prix;
+
+    @Column(name = "description")
+    private String description;
 }

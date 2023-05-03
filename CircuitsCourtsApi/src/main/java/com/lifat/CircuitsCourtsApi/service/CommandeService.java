@@ -1,5 +1,6 @@
 package com.lifat.CircuitsCourtsApi.service;
 
+import com.lifat.CircuitsCourtsApi.model.Client;
 import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.repository.CommandeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,7 @@ public class CommandeService {
         commandeRepository.deleteById(id);
     }
 
+    public Iterable<Commande> getCommandesByClientId(Long id) {
+        return commandeRepository.findByIdClient(id);
+    }
 }

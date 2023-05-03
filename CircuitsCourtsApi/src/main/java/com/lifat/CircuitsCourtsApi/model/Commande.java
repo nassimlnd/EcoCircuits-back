@@ -14,6 +14,6 @@ public class Commande {
     @Column(name = "id_client")
     private Long idClient;
 
-    @Column(name = "id_producteur")
-    private Long idProducteur;
+    @Column(name = "date_commande")
+    private String dateCommande;
 }
