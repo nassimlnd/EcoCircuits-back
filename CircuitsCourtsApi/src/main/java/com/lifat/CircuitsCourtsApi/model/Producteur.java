@@ -2,7 +2,7 @@ package com.lifat.CircuitsCourtsApi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.grammars.hql.HqlParser;
+
 
 @Entity
 @Table(name = "producteurs")
@@ -10,7 +10,7 @@ import org.hibernate.grammars.hql.HqlParser;
 public class Producteur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idProducteur;
+    private Long id_Producteur;
 
     @Column(name = "siret")
     private Long siret;
@@ -22,13 +22,13 @@ public class Producteur {
     private String adresse;
 
     @Column(name = "code_postal")
-    private int codePostal;
+    private int code_postal;
 
     @Column(name = "mail")
     private String mail;
 
 
     @Column(name = "rayon_livraison")
-    private float rayonLivraison;
+    private float rayon_Livraison;
 
 }

@@ -4,11 +4,7 @@ package com.lifat.CircuitsCourtsApi.controller;
 import com.lifat.CircuitsCourtsApi.model.Producteur;
 import com.lifat.CircuitsCourtsApi.service.ProducteurServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api")
 @RestController
@@ -22,11 +18,18 @@ public class ProducterController {
     }
 
     @GetMapping("/producteurs/{id}")
-    public Producteur getProducteurById(@PathVariable long id) {
+    public Producteur getProducteurById(long id) {
         return producteurServices.getProducteurById(id);
     }
 
+    @PostMapping("/producteurs")
+    public Producteur saveProducteur(@RequestBody Producteur producteur){
+        return producteurServices.saveProducteur(producteur);
+    }
 
-
+    @DeleteMapping("/producteurs/{id}")
+    public void deletProducteurById(@PathVariable Long id){
+        producteurServices.deletProducteurById(id);
+    }
 
 }
