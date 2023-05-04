@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommandeDetailRepository extends CrudRepository<CommandeDetail, Long> {
+
+    CommandeDetail findByIdCommande(Long commandeId);
 }

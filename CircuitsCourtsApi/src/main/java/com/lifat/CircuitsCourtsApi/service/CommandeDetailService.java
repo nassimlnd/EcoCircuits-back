@@ -28,4 +28,7 @@ public class CommandeDetailService {
         commandeDetailRepository.deleteById(id);
     }
 
+    public CommandeDetail getCommandeDetailByCommandeId(Long commandeId){
+        return commandeDetailRepository.findByIdCommande(commandeId);
+    }
 }

@@ -24,7 +24,7 @@ public class HubController {
     }
 
     @PostMapping("/hubs")
-    public Hub saveHub(@PathVariable Hub hub){
+    public Hub saveHub(@RequestBody Hub hub){
         return hubSrevice.saveHub(hub);
     }
 
