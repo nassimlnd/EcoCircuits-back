@@ -7,6 +7,7 @@ import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
 import com.lifat.CircuitsCourtsApi.service.CommandeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,14 +38,20 @@ public class CommandeController {
         return commande;
     }
 
-    @DeleteMapping("/commande/{id}")
-    public void deletCommandeById(@PathVariable Long id){
+    @CrossOrigin(origins = "http://localhost:9020")
+    @ResponseBody
+    @DeleteMapping("/commandes/{id}")
+    public ResponseEntity<Void> deletCommandeById(@PathVariable Long id) throws Exception {
+        if(commandeService.getCommande(id) == null){
+            throw new Exception("commande n°"+id+" does not exist");
+        }
         commandeService.deleteCommande(id);
+        //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
+        return ResponseEntity.noContent().build();
     }
 
 
     //Obtenir tous les détails de commandes.
-
     @GetMapping("/commandes/details")
     public Iterable<CommandeDetail> getAllCommandeDetails(){
         return commandeDetailService.getCommandeDetails();
@@ -63,15 +70,23 @@ public class CommandeController {
     }
 
     //Sauvegarder un détail de commande.
+    //@CrossOrigin(origins = "http://localhost:9020")
     @PostMapping("/commandes/details")
     public CommandeDetail saveCommandeDetail(@RequestBody CommandeDetail commandeDetail){
         return commandeDetailService.saveCommandeDetail(commandeDetail);
     }
 
     //Supprimer un détail de commande.
-    @DeleteMapping("/commades/details/{id}")
-    public void deletCommandeDetail(@PathVariable Long id){
+    @CrossOrigin(origins = "http://localhost:9020")
+    @ResponseBody
+    @DeleteMapping("/commandes/details/{id}")
+    public ResponseEntity<Object> deleteCommandeDetail(@PathVariable Long id) throws Exception {
+        if(commandeDetailService.getCommandeDetail(id) == null){
+            throw new Exception("commandeDetail n°"+id+" does not exist");
+        }
         commandeDetailService.deleteCommandeDetail(id);
+        //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
+        return ResponseEntity.noContent().build();
     }
 
 
@@ -89,5 +104,22 @@ public class CommandeController {
     @GetMapping("/commandes/{id}/producteur")
     public CommandeProducteur getCommandeProducteurByCommandeDetail(@PathVariable Long id){
         return commandeProducteurService.getCommandeProducteurByCommandeDetail(id);
+    }
+
+    @PostMapping("/commandes/producteurs")
+    public CommandeProducteur saveCommandeProducteur(@RequestBody CommandeProducteur commandeProducteur){
+        return commandeProducteurService.saveCommandeProducteur(commandeProducteur);
+    }
+
+    @CrossOrigin(origins = "http://localhost:9020")
+    @ResponseBody
+    @DeleteMapping("/commandes/producteurs/{id}")
+    public ResponseEntity<Void> deleteCommandeProducteur(@PathVariable Long id) throws Exception {
+        if(commandeProducteurService.getCommandeProducteur(id) == null){
+            throw new Exception("commandeProducteur n°"+id+" does not exist");
+        }
+        commandeProducteurService.deleteCommandeProducteur(id);
+        //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
+        return ResponseEntity.noContent().build();
     }
 }

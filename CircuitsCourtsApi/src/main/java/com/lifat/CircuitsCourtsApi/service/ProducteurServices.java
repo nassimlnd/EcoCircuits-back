@@ -3,7 +3,6 @@ package com.lifat.CircuitsCourtsApi.service;
 import com.lifat.CircuitsCourtsApi.model.Producteur;
 import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
