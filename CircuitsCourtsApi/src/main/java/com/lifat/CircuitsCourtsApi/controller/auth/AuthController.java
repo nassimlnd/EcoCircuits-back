@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -14,9 +17,12 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody String username, @RequestBody String password) {
-        System.out.println("username: " + username);
-        System.out.println("password: " + password);
+    public ResponseEntity<?> login(@RequestBody Map<String, Object> payload) {
+        System.out.println("username: " + payload.get("username"));
+        System.out.println("password: " + payload.get("password"));
+
+        String username = (String) payload.get("username");
+        String password = (String) payload.get("password");
 
         User user = userService.findByUsername(username);
 
