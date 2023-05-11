@@ -1,5 +1,6 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
+import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
 import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
@@ -7,13 +8,17 @@ import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
 import com.lifat.CircuitsCourtsApi.service.CommandeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping ("/api")
 public class CommandeController {
 
+    @Autowired
+    JwtUtil jwtUtil;
     @Autowired
     private CommandeService commandeService;
     @Autowired
@@ -23,103 +28,142 @@ public class CommandeController {
 
     //Commandes
     @GetMapping("/commandes")
-    public Iterable<Commande> getCommandes() {
-        return commandeService.getCommandes();
+    public ResponseEntity<?> getCommandes(@RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeService.getCommandes());
+        }else return ResponseEntity.badRequest().body("Invalid token");
+
     }
 
     @GetMapping("/commandes/{id}")
-    public Commande getCommandeById(@PathVariable Long id){
-        return commandeService.getCommande(id);
+    public ResponseEntity<?> getCommandeById(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeService.getCommande(id));
+        }else return ResponseEntity.badRequest().body("Ivalid token");
+
     }
 
     @PostMapping("/commandes")
-    public Commande saveCommande(@RequestBody Commande commande){
-        Commande savedCommande = commandeService.saveCommande(commande);
-        return commande;
+    public ResponseEntity<?> saveCommande(@RequestBody Commande commande, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            Commande savedCommande = commandeService.saveCommande(commande);
+            return ResponseEntity.ok(savedCommande);
+        }else return ResponseEntity.badRequest().body("Invalid token");
+
     }
 
-    @CrossOrigin(origins = "http://localhost:9020")
     @ResponseBody
     @DeleteMapping("/commandes/{id}")
-    public ResponseEntity<Void> deletCommandeById(@PathVariable Long id) throws Exception {
-        if(commandeService.getCommande(id) == null){
-            throw new Exception("commande n°"+id+" does not exist");
-        }
-        commandeService.deleteCommande(id);
-        //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deletCommandeById(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            if(commandeService.getCommande(id) == null){
+                throw new Exception("commande n°"+id+" does not exist");
+            }
+            commandeService.deleteCommande(id);
+            //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
+            return ResponseEntity.noContent().build();
+        }else return ResponseEntity.badRequest().body("Invalid token");
+
     }
 
 
     //Obtenir tous les détails de commandes.
     @GetMapping("/commandes/details")
-    public Iterable<CommandeDetail> getAllCommandeDetails(){
-        return commandeDetailService.getCommandeDetails();
+    public ResponseEntity<?> getAllCommandeDetails(@RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeDetailService.getCommandeDetails());
+        }else return ResponseEntity.badRequest().body("Invalid token");
+
     }
 
     //Obtenir une commandeDetail avec son idCommande.
     @GetMapping("/commandes/{id}/details")
-    public CommandeDetail getCommandeDetailByIdCommande(@PathVariable Long id){
-        return commandeDetailService.getCommandeDetailByCommandeId(id);
+    public ResponseEntity<?> getCommandeDetailByIdCommande(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeDetailService.getCommandeDetailByCommandeId(id));
+        }else return ResponseEntity.badRequest().body("Invalid token");
     }
 
     //Obtenir une CommandeDetail avec son id_CommandeDetail
     @GetMapping("/commandes/details/{id}")
-    public CommandeDetail getCommandeDetailById(@PathVariable Long id){
-        return commandeDetailService.getCommandeDetail(id);
+    public ResponseEntity<?> getCommandeDetailById(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeDetailService.getCommandeDetail(id));
+        }else return ResponseEntity.badRequest().body("Invalid token");
     }
 
     //Sauvegarder un détail de commande.
-    //@CrossOrigin(origins = "http://localhost:9020")
     @PostMapping("/commandes/details")
-    public CommandeDetail saveCommandeDetail(@RequestBody CommandeDetail commandeDetail){
-        return commandeDetailService.saveCommandeDetail(commandeDetail);
+    public ResponseEntity<?> saveCommandeDetail(@RequestBody CommandeDetail commandeDetail, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeDetailService.saveCommandeDetail(commandeDetail));
+        }else return ResponseEntity.badRequest().body("Invalid token");
     }
 
     //Supprimer un détail de commande.
-    @CrossOrigin(origins = "http://localhost:9020")
     @ResponseBody
     @DeleteMapping("/commandes/details/{id}")
-    public ResponseEntity<Object> deleteCommandeDetail(@PathVariable Long id) throws Exception {
-        if(commandeDetailService.getCommandeDetail(id) == null){
-            throw new Exception("commandeDetail n°"+id+" does not exist");
-        }
-        commandeDetailService.deleteCommandeDetail(id);
-        //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteCommandeDetail(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            if(commandeDetailService.getCommandeDetail(id) == null){
+                throw new Exception("commandeDetail n°"+id+" does not exist");
+            }
+            commandeDetailService.deleteCommandeDetail(id);
+            //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
+            return ResponseEntity.noContent().build();
+        }else return ResponseEntity.badRequest().body("Invalid token");
+
     }
 
 
     //commandesProducteur.
     @GetMapping("/commandes/producteurs")
-    public Iterable<CommandeProducteur> getAllCommandeProducteur(){
-        return commandeProducteurService.getCommandeProducteurs();
+    public ResponseEntity<?> getAllCommandeProducteur(@RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeProducteurService.getCommandeProducteurs());
+        }else return ResponseEntity.badRequest().body("Invalid token");
     }
 
     @GetMapping("/commandes/producteurs/{id}")
-    public CommandeProducteur getCommandeProducteurById(@PathVariable Long id){
-        return commandeProducteurService.getCommandeProducteur(id);
+    public ResponseEntity<?> getCommandeProducteurById(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeProducteurService.getCommandeProducteur(id));
+        }else return ResponseEntity.badRequest().body("Invalid Token");
     }
 
     @GetMapping("/commandes/{id}/producteur")
-    public CommandeProducteur getCommandeProducteurByCommandeDetail(@PathVariable Long id){
-        return commandeProducteurService.getCommandeProducteurByCommandeDetail(id);
+    public ResponseEntity<?> getCommandeProducteurByCommandeDetail(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeProducteurService.getCommandeProducteurByCommandeDetail(id));
+        }else return ResponseEntity.badRequest().body("Invalid token");
     }
 
     @PostMapping("/commandes/producteurs")
-    public CommandeProducteur saveCommandeProducteur(@RequestBody CommandeProducteur commandeProducteur){
-        return commandeProducteurService.saveCommandeProducteur(commandeProducteur);
+    public ResponseEntity<?> saveCommandeProducteur(@RequestBody CommandeProducteur commandeProducteur, @RequestParam String key) throws Exception {
+       if(jwtUtil.isValidToken(key)){
+           return ResponseEntity.ok(commandeProducteurService.saveCommandeProducteur(commandeProducteur));
+       }else return ResponseEntity.badRequest().body("Invalid token");
     }
 
-    @CrossOrigin(origins = "http://localhost:9020")
+
     @ResponseBody
     @DeleteMapping("/commandes/producteurs/{id}")
-    public ResponseEntity<Void> deleteCommandeProducteur(@PathVariable Long id) throws Exception {
-        if(commandeProducteurService.getCommandeProducteur(id) == null){
-            throw new Exception("commandeProducteur n°"+id+" does not exist");
-        }
-        commandeProducteurService.deleteCommandeProducteur(id);
-        //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteCommandeProducteur(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            if(commandeProducteurService.getCommandeProducteur(id) == null){
+                throw new Exception("commandeProducteur n°"+id+" does not exist");
+            }
+            commandeProducteurService.deleteCommandeProducteur(id);
+            //envoi d'une reponse status 204 pour indiquer que la ressource à été supprimée avec succes.
+            return ResponseEntity.noContent().build();
+        }else return ResponseEntity.badRequest().body("Invalid Token");
+    }
+
+
+    @GetMapping("/commandes/client/{id}")
+    public ResponseEntity<?> getCommandesByClientId(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeService.getCommandesByClientId(id));
+        }else return ResponseEntity.badRequest().body("Invalid token");
     }
 }

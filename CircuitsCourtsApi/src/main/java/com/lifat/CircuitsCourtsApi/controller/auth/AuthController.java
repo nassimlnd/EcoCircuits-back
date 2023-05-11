@@ -1,5 +1,6 @@
 package com.lifat.CircuitsCourtsApi.controller.auth;
 
+import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.User;
 import com.lifat.CircuitsCourtsApi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    JwtUtil jwt;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, Object> payload) {
@@ -29,7 +32,10 @@ public class AuthController {
         if (user == null || !user.getPassword().equals(password)) {
             return ResponseEntity.badRequest().body("Invalid username/password");
         } else {
+            String token =  jwt.generateNewJwtToken(username, password);
+            user.setToken(token);
             return ResponseEntity.ok(user);
+
         }
     }
 

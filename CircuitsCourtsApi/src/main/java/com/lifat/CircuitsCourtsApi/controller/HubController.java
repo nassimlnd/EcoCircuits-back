@@ -1,35 +1,55 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
+import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.Hub;
 import com.lifat.CircuitsCourtsApi.service.HubSrevice;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@RequestMapping("/api")
 public class HubController {
 
+    @Autowired
+    JwtUtil jwtUtil;
     @Autowired
     private HubSrevice hubSrevice;
 
     @GetMapping("/hubs")
-    public Iterable<Hub> getAllHubs(){
-        return hubSrevice.getAllHubs();
+    public ResponseEntity<?> getAllHubs(@RequestParam String key) throws Exception {
+        if (jwtUtil.isValidToken(key)) {
+            return ResponseEntity.ok(hubSrevice.getAllHubs());
+        } else {
+            return ResponseEntity.badRequest().body("Invalid Token");
+        }
     }
 
     @GetMapping("/hubs/{id}")
-    public Hub getHubById(@PathVariable Long id){
-        return hubSrevice.getHubById(id);
+    public ResponseEntity<?> getHubById(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if (jwtUtil.isValidToken(key)) {
+            return ResponseEntity.ok(hubSrevice.getHubById(id));
+        } else {
+            return ResponseEntity.badRequest().body("Invalid Token");
+        }
     }
 
     @PostMapping("/hubs")
-    public Hub saveHub(@RequestBody Hub hub){
-        return hubSrevice.saveHub(hub);
+    public ResponseEntity<?> saveHub(@RequestBody Hub hub, @RequestParam String key) throws Exception {
+        if (jwtUtil.isValidToken(key)) {
+            return ResponseEntity.ok(hubSrevice.saveHub(hub));
+        } else {
+            return ResponseEntity.badRequest().body("Invalid Token");
+        }
     }
 
     @DeleteMapping("/hub/{id}")
-    public void deletHubById(@PathVariable Long id){
-        hubSrevice.deletHubById(id);
+    public ResponseEntity<?> deletHubById(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if (jwtUtil.isValidToken(key)) {
+            hubSrevice.deletHubById(id);
+            return ResponseEntity.ok("Hub with ID " + id + " was deleted.");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid Token");
+        }
     }
 }

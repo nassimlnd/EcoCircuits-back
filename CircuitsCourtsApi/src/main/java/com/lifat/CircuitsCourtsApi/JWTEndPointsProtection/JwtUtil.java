@@ -7,20 +7,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 //imports pour la génération de la clé sécurisée
-import java.lang.reflect.Array;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.sql.SQLOutput;
-import java.util.Arrays;
-import java.util.Base64;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
+import java.security.Key;
+import java.util.Base64;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Date;
 import java.time.Instant;
-import java.util.List;
+
 
 
 import static java.time.temporal.ChronoUnit.MINUTES;
