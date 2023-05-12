@@ -15,10 +15,10 @@ import io.jsonwebtoken.*;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${com.lifat.circuitscourtsapi.jwtSecret}")
+    @Value("${com.lifat.circuitscourtsapi.jwtSecret: ad3e3c0ef0c8d0f70f1e4a9b4b892978e87f4a2d82b9e4b23e461b139a8f6c7018d749bb829e3416b6e3502aeb166bc914a3d206725edf6d9b4c85df8b0b4f7}")
     private String jwtSecret;
 
-    @Value("${com.lifat.circuitscourtsapi.jwtExpirationMs}")
+    @Value("${com.lifat.circuitscourtsapi.jwtExpirationMs: 86400000}")
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
