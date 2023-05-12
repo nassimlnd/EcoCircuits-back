@@ -1,6 +1,6 @@
 package com.lifat.CircuitsCourtsApi.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 
 

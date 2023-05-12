@@ -104,7 +104,7 @@ public class JwtUtil implements CommandLineRunner {
     }
 
     public boolean doesThisUserHavePermition(User user){
-
+        return false;
     }
 }
 
