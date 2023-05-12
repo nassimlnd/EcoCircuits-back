@@ -1,6 +1,8 @@
 package com.lifat.CircuitsCourtsApi.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+
 import lombok.Data;
 
 import java.util.HashSet;
@@ -22,6 +24,7 @@ public class User {
     @Column
     private String password;
     @Column
+    @Email
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)

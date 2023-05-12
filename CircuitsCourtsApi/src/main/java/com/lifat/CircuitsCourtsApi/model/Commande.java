@@ -2,9 +2,14 @@ package com.lifat.CircuitsCourtsApi.model;
 
 import javax.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.Date;
 
 @Data
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "commandes")
 public class Commande {
     @Id
@@ -15,5 +20,6 @@ public class Commande {
     private Long idClient;
 
     @Column(name = "date_commande")
-    private String dateCommande;
+    @CreatedDate
+    private Date dateCommande;
 }
