@@ -6,6 +6,8 @@ import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -18,10 +20,11 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    @Secured("ROLE_ORGANISATEUR")
     @GetMapping("/clients")
     public ResponseEntity<?> getClients(@RequestParam String key) throws Exception {
          if(jwtUtil.isValidToken(key)){
-            return ResponseEntity.ok(clientService.getClients()) ;
+            return ResponseEntity.ok(clientService.getClients());
         }else return ResponseEntity.badRequest().body("Invalid Token");
     }
 

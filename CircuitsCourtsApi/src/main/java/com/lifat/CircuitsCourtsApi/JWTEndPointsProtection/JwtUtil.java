@@ -72,17 +72,6 @@ public class JwtUtil implements CommandLineRunner {
         return claims;
     }
 
-    //verifie la permition de l'utilisateur, leve une erreur si la permition est invalide
-    //les grades le grade le plus haut(ADMIN) à un grade à 3, le plus bas(Client) à un grade à 1;
-    public boolean doesThisUserHavePermission(String token, ERole permission){
-        User user = userService.findByToken(token);
-        if(user.getERole().getGrade() < permission.getGrade()) {
-            return false;
-        } else return true;
-
-    }
-
-
     @Override
     public void run(String... args) throws Exception {
         generateKey();
