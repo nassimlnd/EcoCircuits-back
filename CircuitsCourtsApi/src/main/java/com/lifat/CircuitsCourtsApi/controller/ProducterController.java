@@ -1,6 +1,5 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
-import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.Producteur;
 import com.lifat.CircuitsCourtsApi.service.ProducteurServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @RestController
 public class ProducterController {
-    @Autowired
-    JwtUtil jwtUtil;
+
     @Autowired
     private ProducteurServices producteurServices;
 

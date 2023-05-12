@@ -1,5 +1,6 @@
 package com.lifat.CircuitsCourtsApi.service;
 
+import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.Producteur;
 import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,4 +27,6 @@ public class ProducteurServices {
     public void deletProducteurById(Long id){
         producteurRepository.deleteById(id);
     }
+
+
 }

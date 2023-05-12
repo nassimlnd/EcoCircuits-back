@@ -33,4 +33,7 @@ public class CommandeService {
     }
 
 
+    public Iterable<Commande> getAllCommandesByProd(Long id){
+       return commandeRepository.findAllCommandesByProducteur(id);
+    }
 }

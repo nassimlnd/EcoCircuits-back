@@ -1,6 +1,5 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
-import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.Produit;
 import com.lifat.CircuitsCourtsApi.service.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ public class ProduitController {
     @Autowired
     private ProduitService produitService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/produits")

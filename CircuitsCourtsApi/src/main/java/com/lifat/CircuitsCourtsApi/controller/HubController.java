@@ -1,6 +1,5 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
-import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.Hub;
 import com.lifat.CircuitsCourtsApi.service.HubSrevice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class HubController {
 
-    @Autowired
-    JwtUtil jwtUtil;
+
     @Autowired
     private HubSrevice hubSrevice;
 

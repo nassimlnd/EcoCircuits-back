@@ -1,12 +1,8 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
-import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
-import com.lifat.CircuitsCourtsApi.model.Client;
-import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class ClientController {
 
-    @Autowired
-    JwtUtil jwtUtil;
+
     @Autowired
     private ClientService clientService;
 

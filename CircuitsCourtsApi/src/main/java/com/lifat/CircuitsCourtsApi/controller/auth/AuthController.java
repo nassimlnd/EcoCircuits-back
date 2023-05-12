@@ -1,7 +1,5 @@
 package com.lifat.CircuitsCourtsApi.controller.auth;
 
-import com.google.common.hash.Hashing;
-import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.ERole;
 import com.lifat.CircuitsCourtsApi.model.Role;
 import com.lifat.CircuitsCourtsApi.model.User;
@@ -24,10 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 

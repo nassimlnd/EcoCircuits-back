@@ -1,6 +1,5 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
-import com.lifat.CircuitsCourtsApi.JWTEndPointsProtection.JwtUtil;
 import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
 import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
@@ -8,7 +7,6 @@ import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
 import com.lifat.CircuitsCourtsApi.service.CommandeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class CommandeController {
 
-    @Autowired
-    JwtUtil jwtUtil;
+
     @Autowired
     private CommandeService commandeService;
     @Autowired
@@ -156,9 +153,17 @@ public class CommandeController {
 
      */
 
+    //obtient les commandesProd par producteur
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/commandesProd/producteurs/{id}")
     public ResponseEntity<?> getCommandesProdByProdId(@PathVariable Long id){
             return ResponseEntity.ok(commandeProducteurService.getCommandesProducteurByIdProducteur(id));
+    }
+
+    //obtient les commandes par producteur
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole('PRODUCTEUR')")
+    @GetMapping("/commandesByProducteur/{id}")
+    public ResponseEntity<?> getCommandesByProducteurId(@PathVariable Long id){
+        return ResponseEntity.ok(commandeService.getAllCommandesByProd(id));
     }
 }

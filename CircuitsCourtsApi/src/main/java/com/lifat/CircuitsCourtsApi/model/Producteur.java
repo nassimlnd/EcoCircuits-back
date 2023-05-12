@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
+import java.util.Set;
+
 
 @Entity
 @Table(name = "producteurs")
