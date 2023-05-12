@@ -15,7 +15,7 @@ public class User {
     @Column
     private String password;
     @Column
-    private String role;
+    private Role role;
     @Column
     private String token;
 

@@ -162,6 +162,7 @@ public class CommandeController {
 
     @GetMapping("/commandes/client/{id}")
     public ResponseEntity<?> getCommandesByClientId(@PathVariable Long id, @RequestParam String key) throws Exception {
+
         if(jwtUtil.isValidToken(key)){
             return ResponseEntity.ok(commandeService.getCommandesByClientId(id));
         }else return ResponseEntity.badRequest().body("Invalid token");

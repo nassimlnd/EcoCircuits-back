@@ -1,9 +1,13 @@
 package com.lifat.CircuitsCourtsApi.JWTEndPointsProtection;
 
+import com.lifat.CircuitsCourtsApi.model.Role;
+import com.lifat.CircuitsCourtsApi.model.User;
+import com.lifat.CircuitsCourtsApi.service.UserService;
 import io.jsonwebtoken.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 //imports pour la génération de la clé sécurisée
@@ -22,6 +26,8 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 @Data
 public class JwtUtil implements CommandLineRunner {
 
+    @Autowired
+    private UserService userService;
     @Autowired
     private static String secret = "asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4";
 
@@ -67,6 +73,17 @@ public class JwtUtil implements CommandLineRunner {
         return claims;
     }
 
+    //verifie la permition de l'utilisateur, leve une erreur si la permition est invalide
+    //les grades le grade le plus haut(ADMIN) à un grade à 3, le plus bas(Client) à un grade à 1;
+    public boolean doesThisUserHavePermission(String token, Role permission){
+        User user = userService.findByToken(token);
+        if(user.getRole().getGrade() < permission.getGrade()) {
+            return false;
+        } else return true;
+
+    }
+
+
     @Override
     public void run(String... args) throws Exception {
         generateKey();
@@ -84,6 +101,9 @@ public class JwtUtil implements CommandLineRunner {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean doesThisUserHavePermition(User user){
 
     }
 }

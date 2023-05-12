@@ -20,7 +20,7 @@ public class ClientController {
 
     @GetMapping("/clients")
     public ResponseEntity<?> getClients(@RequestParam String key) throws Exception {
-        if(jwtUtil.isValidToken(key)){
+         if(jwtUtil.isValidToken(key)){
             return ResponseEntity.ok(clientService.getClients()) ;
         }else return ResponseEntity.badRequest().body("Invalid Token");
     }
