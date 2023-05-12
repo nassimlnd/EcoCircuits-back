@@ -1,13 +1,12 @@
 package com.lifat.CircuitsCourtsApi.JWTEndPointsProtection;
 
-import com.lifat.CircuitsCourtsApi.model.Role;
+import com.lifat.CircuitsCourtsApi.model.ERole;
 import com.lifat.CircuitsCourtsApi.model.User;
 import com.lifat.CircuitsCourtsApi.service.UserService;
 import io.jsonwebtoken.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 //imports pour la génération de la clé sécurisée
@@ -75,9 +74,9 @@ public class JwtUtil implements CommandLineRunner {
 
     //verifie la permition de l'utilisateur, leve une erreur si la permition est invalide
     //les grades le grade le plus haut(ADMIN) à un grade à 3, le plus bas(Client) à un grade à 1;
-    public boolean doesThisUserHavePermission(String token, Role permission){
+    public boolean doesThisUserHavePermission(String token, ERole permission){
         User user = userService.findByToken(token);
-        if(user.getRole().getGrade() < permission.getGrade()) {
+        if(user.getERole().getGrade() < permission.getGrade()) {
             return false;
         } else return true;
 

@@ -1,17 +1,19 @@
 package com.lifat.CircuitsCourtsApi.model;
 
+import lombok.Data;
 
-public enum Role {
-    ADMIN(3),
-    PRODUCTEUR(2),
-    CLIENT(1);
+import javax.persistence.*;
 
-    private int grade;
-    Role(int grade) {
-        this.grade = grade;
-    }
+@Data
+@Entity
+@Table(name = "roles")
+public class Role {
 
-    public int getGrade(){
-        return this.grade;
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "role")
+    private String role;
+
 }

@@ -34,3 +34,10 @@ mvc:
       - POST
       - PUT
       - DELETE
+
+com:
+    lifat:
+        circuits_courts:
+        jwt:
+            secret: mySecretKey
+            expiration: 86400000
