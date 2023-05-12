@@ -34,6 +34,7 @@ public class AuthController {
         } else {
             String token =  jwt.generateNewJwtToken(username, password);
             user.setToken(token);
+            userService.save(user);
             return ResponseEntity.ok(user);
 
         }

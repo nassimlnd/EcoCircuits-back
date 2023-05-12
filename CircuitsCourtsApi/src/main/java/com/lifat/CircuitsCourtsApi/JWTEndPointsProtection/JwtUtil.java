@@ -56,7 +56,6 @@ public class JwtUtil implements CommandLineRunner {
         } catch (Exception e) {
             return false;
         }
-
     }
 
     public Jws<Claims> parseJwt(String token) {

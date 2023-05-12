@@ -31,4 +31,6 @@ public class CommandeService {
     public Iterable<Commande> getCommandesByClientId(Long id) {
         return commandeRepository.findByIdClient(id);
     }
+
+
 }

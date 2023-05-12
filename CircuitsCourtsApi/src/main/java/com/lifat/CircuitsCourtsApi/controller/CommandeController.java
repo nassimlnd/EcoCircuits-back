@@ -166,4 +166,22 @@ public class CommandeController {
             return ResponseEntity.ok(commandeService.getCommandesByClientId(id));
         }else return ResponseEntity.badRequest().body("Invalid token");
     }
+
+
+    /*
+    @GetMapping("/commandes/byProducteursId/{id}")
+        public ResponseEntity<?> getCommandesByProducteurId(@PathVariable Long id, @RequestParam String key) throws Exception {
+            if (jwtUtil.isValidToken(key)){
+                return ResponseEntity.ok(commandeProducteurService.getCommandeByProducteurId(id));
+        }else return ResponseEntity.badRequest().body("Invalid token");
+    }
+
+     */
+
+    @GetMapping("/commandesProd/producteurs/{id}")
+    public ResponseEntity<?> getCommandesProdByProdId(@PathVariable Long id, @RequestParam String key) throws Exception {
+        if(jwtUtil.isValidToken(key)){
+            return ResponseEntity.ok(commandeProducteurService.getCommandesProducteurByIdProducteur(id));
+        }else return ResponseEntity.badRequest().body("Invalid token");
+    }
 }
