@@ -20,25 +20,22 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    @Secured("ROLE_ORGANISATEUR")
+    @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
     @GetMapping("/clients")
-    public ResponseEntity<?> getClients(@RequestParam String key) throws Exception {
-         if(jwtUtil.isValidToken(key)){
+    public ResponseEntity<?> getClients() {
             return ResponseEntity.ok(clientService.getClients());
-        }else return ResponseEntity.badRequest().body("Invalid Token");
+
     }
 
+    @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
     @GetMapping("/clients/{id}")
-    public ResponseEntity<?> getClientById(@PathVariable Long id, @RequestParam String key) throws Exception {
-        if(jwtUtil.isValidToken(key)){
+    public ResponseEntity<?> getClientById(@PathVariable Long id)  {
             return ResponseEntity.ok(clientService.getClient(id));
-        }else return ResponseEntity.badRequest().body("Invalid token");
     }
 
+    @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
     @GetMapping("/clients/{id}/commandes")
-    public ResponseEntity<?> getClientCommandes(@PathVariable Long id, @RequestParam String key) throws Exception {
-        if(jwtUtil.isValidToken(key)){
+    public ResponseEntity<?> getClientCommandes(@PathVariable Long id) throws Exception {
             return ResponseEntity.ok(clientService.getClientCommandes(id));
-        }else return ResponseEntity.badRequest().body("Invalid Token");
     }
 }

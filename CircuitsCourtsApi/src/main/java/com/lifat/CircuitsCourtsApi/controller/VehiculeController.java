@@ -5,7 +5,9 @@ import com.lifat.CircuitsCourtsApi.model.Vehicule;
 import com.lifat.CircuitsCourtsApi.service.VehiculeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
@@ -16,32 +18,29 @@ public class VehiculeController {
     @Autowired
     private VehiculeService vehiculeService;
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/vehicules")
-    public ResponseEntity<?> getAllVehicules(@RequestParam String key) throws Exception {
-       if(jwtUtil.isValidToken(key)){
-           return ResponseEntity.ok(vehiculeService.getAllVehicules());
-       }else return ResponseEntity.badRequest().body("Invalid Token");
+    public ResponseEntity<?> getAllVehicules() {
+        return ResponseEntity.ok(vehiculeService.getAllVehicules());
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/vehicules/{id}")
-    public ResponseEntity<?> getVehiculeById(@PathVariable Long id, @RequestParam String key) throws Exception {
-        if(jwtUtil.isValidToken(key)){
-            return ResponseEntity.ok(vehiculeService.getVehiculeById(id));
-        }else return ResponseEntity.badRequest().body("Invalid token");
+    public ResponseEntity<?> getVehiculeById(@PathVariable Long id) {
+        return ResponseEntity.ok(vehiculeService.getVehiculeById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @PostMapping("/vehicules")
-    public ResponseEntity<?> saveVehicule(@RequestBody Vehicule vehicule, @RequestParam String key) throws Exception {
-        if (jwtUtil.isValidToken(key)){
-            return ResponseEntity.ok(vehiculeService.saveVehicule(vehicule));
-        }else return ResponseEntity.badRequest().body("Invalid token");
+    public ResponseEntity<?> saveVehicule(@RequestBody Vehicule vehicule) {
+        return ResponseEntity.ok(vehiculeService.saveVehicule(vehicule));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @DeleteMapping("/vehicules/{id}")
-    public ResponseEntity<?> deletVehiculebyId(@PathVariable Long id, @RequestParam String key) throws Exception {
-        if(jwtUtil.isValidToken(key)){
-            vehiculeService.deletVehiculeById(id);
-            return ResponseEntity.ok("vehicule n°"+id+"has been deleted");
-        }else return ResponseEntity.badRequest().body("Invalid token");
+    public ResponseEntity<?> deletVehiculebyId(@PathVariable Long id) {
+        vehiculeService.deletVehiculeById(id);
+        return ResponseEntity.ok("vehicule n°" + id + "has been deleted");
+
     }
 }
