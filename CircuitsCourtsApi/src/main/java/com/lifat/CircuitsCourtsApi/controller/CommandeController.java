@@ -29,11 +29,9 @@ public class CommandeController {
 
     //Commandes
     @GetMapping("/commandes")
-    public ResponseEntity<?> getCommandes(@RequestParam String key) throws Exception {
-        if(jwtUtil.isValidToken(key)){
-            return ResponseEntity.ok(commandeService.getCommandes());
-        }else return ResponseEntity.badRequest().body("Invalid token");
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
+    public ResponseEntity<?> getCommandes() throws Exception {
+        return ResponseEntity.ok(commandeService.getCommandes());
     }
 
     @GetMapping("/commandes/{id}")
