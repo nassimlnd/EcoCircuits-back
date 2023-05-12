@@ -3,6 +3,7 @@ package com.lifat.CircuitsCourtsApi.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -14,6 +15,7 @@ public class Role {
     private Long id;
 
     @Column(name = "role")
+    @NotNull
     private String role;
 
 }

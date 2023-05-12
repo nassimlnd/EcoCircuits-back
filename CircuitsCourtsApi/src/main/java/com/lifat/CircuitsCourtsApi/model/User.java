@@ -2,6 +2,7 @@ package com.lifat.CircuitsCourtsApi.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
@@ -20,8 +21,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
+    @NotNull
     private String username;
     @Column
+    @NotNull
     private String password;
     @Column
     @Email

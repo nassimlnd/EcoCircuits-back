@@ -1,6 +1,8 @@
 package com.lifat.CircuitsCourtsApi.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 
 @Data
@@ -13,9 +15,11 @@ public class CommandeDetail {
     private Long id;
 
     @Column(name = "id_commande")
+    @NotNull
     private Long idCommande;
 
     @Column(name = "id_produit")
+    @NotNull
     private Long idProduit;
 
     @Column(name = "quantite")

@@ -118,6 +118,9 @@ public class AuthController {
                         roles.add(orgaRole);
 
                         break;
+                    case "prod":
+                        Role prodRole = roleRepository.findByRole(ERole.ROLE_PRODUCTEUR.name())
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     default:
                         Role userRole = roleRepository.findByRole(ERole.ROLE_USER.name())
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));

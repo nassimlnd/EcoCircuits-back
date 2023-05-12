@@ -1,6 +1,8 @@
 package com.lifat.CircuitsCourtsApi.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,6 +19,7 @@ public class Commande {
     private Long id;
 
     @Column(name = "id_client")
+    @NotNull
     private Long idClient;
 
     @Column(name = "date_commande")
