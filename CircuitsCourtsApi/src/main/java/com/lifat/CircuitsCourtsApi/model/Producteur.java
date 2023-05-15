@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 
@@ -18,21 +19,20 @@ public class Producteur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_Producteur;
 
-    @Column(name = "siret")
-    @Digits(integer = 14, fraction = 0)
-    private Long siret;
 
     @Column(name = "libelle")
     @NotNull
     private String libelle;
 
-    @Column(name = "adresse")
+    @Column(name = "adresse_postale")
     @NotNull
     private String adresse;
 
-    @Column(name = "code_postal")
-    @Digits(integer = 5, fraction = 0)
-    private int code_postal;
+    @Column(name ="description")
+    private String description;
+
+    @Column(name = "tags")
+    private String tags;
 
     @Column(name = "mail")
     @Email
