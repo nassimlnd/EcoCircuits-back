@@ -19,7 +19,8 @@ public class Producteur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_Producteur;
 
-    @Column
+
+    @Column(name = "description")
     private String description;
 
     @Column(name = "tags")
