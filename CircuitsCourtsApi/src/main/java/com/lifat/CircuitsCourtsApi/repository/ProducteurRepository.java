@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface ProducteurRepository extends CrudRepository<Producteur, Long> {
 
 
+
 }

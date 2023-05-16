@@ -154,8 +154,8 @@ public class CommandeController {
      */
 
     //obtient les commandesProd par producteur
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
-    @GetMapping("/commandesProd/producteurs/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole('PRODUCTEUR')")
+    @GetMapping("/producteurs/{id}/commandes")
     public ResponseEntity<?> getCommandesProdByProdId(@PathVariable Long id){
             return ResponseEntity.ok(commandeProducteurService.getCommandesProducteurByIdProducteur(id));
     }
