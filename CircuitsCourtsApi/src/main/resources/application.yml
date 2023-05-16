@@ -2,9 +2,9 @@ spring:
   application:
     name: CircuitsCourtsAPI
   datasource:
-      url: jdbc:mysql://localhost:3306/circuits_courts?useSSL=false&serverTimezone=UTC
-      username: root
-      password:
+      url: jdbc:mysql://ecocircuitsmysql.mysql.database.azure.com/ecocircuits?useSSL=false&serverTimezone=UTC
+      username: ecocircuits_admin
+      password: 569841Nassim
       driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
