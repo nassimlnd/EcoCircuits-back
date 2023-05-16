@@ -19,6 +19,11 @@ public class Producteur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_Producteur;
 
+    @Column
+    private String description;
+
+    @Column(name = "tags")
+    private String tags;
 
     @Column(name = "libelle")
     @NotNull
@@ -28,18 +33,10 @@ public class Producteur {
     @NotNull
     private String adresse;
 
-    @Column(name ="description")
-    private String description;
-
-    @Column(name = "tags")
-    private String tags;
-
     @Column(name = "mail")
-    @Email
     private String mail;
 
     @Column(name = "rayon_livraison")
-    @Digits(integer = 3, fraction = 0)
-    private float rayon_Livraison;
+    private Float rayon_Livraison;
 
 }

@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +87,7 @@ public class CommandeControllerTest {
         Commande commande = new Commande();
         commande.setId(-1L);
         commande.setIdClient(1L);
-        commande.setDateCommande("");
+        commande.setDateCommande(Date.from(Instant.now()));
 
         //creation du mock
         commandeRepository = Mockito.mock(CommandeRepository.class);
@@ -114,7 +116,7 @@ public class CommandeControllerTest {
     public void testDeleteCommande() throws Exception {
         Commande c = new Commande();
         c.setIdClient(1L);
-        c.setDateCommande("");
+        c.setDateCommande(Date.from(Instant.now()));
         //renvoie la commande une fois insérée dans la BD, sert à recuperer par la suite l'id de la commande car généré automatiquement
         c = commandeService.saveCommande(c);
         commandeRepository = Mockito.mock(CommandeRepository.class);
