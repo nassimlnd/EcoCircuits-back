@@ -1,5 +1,6 @@
 package com.lifat.CircuitsCourtsApi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
 import com.lifat.CircuitsCourtsApi.service.CommandeService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -24,7 +26,10 @@ import java.util.Collection;
 @Data
 public class CommandeInfo {
     private Commande commande;
+    //premet de ne pas metre le contenu dans le json envoyé dans la requete fasterxml.jacksonAnnotation
+    @JsonIgnore
     private CommandeDetailService commandeDetailService;
+    @JsonIgnore
     private CommandeProducteurService commandeProducteurService;
     private Collection<CommandeDetail> commandesDetails;
 
