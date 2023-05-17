@@ -15,7 +15,7 @@ public interface CommandeRepository extends CrudRepository<Commande, Long> {
 
     Optional<Commande> findAllCommandeById(Long idCommande);
 
-    @Query(value = "SELECT Commande FROM Commande c INNER JOIN CommandeDetail cd ON c.id = cd.idCommande INNER JOIN CommandeProducteur cp ON cd.id = cp.idCommandeDetails WHERE cp.idProducteur = :idProd", nativeQuery = true)
+    @Query(value = "SELECT * FROM Commandes c INNER JOIN commande_details cd ON c.id = cd.id_commande INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cp.id_producteur = :idProd", nativeQuery = true)
     Iterable<Commande> findAllCommandesByProducteur(@Param("idProd")Long idProd);
 
 

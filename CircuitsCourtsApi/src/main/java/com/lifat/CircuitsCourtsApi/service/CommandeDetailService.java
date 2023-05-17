@@ -41,4 +41,8 @@ public class CommandeDetailService {
     public Iterable<CommandeDetail> findAllByIdCommande(Long idCommande) {
         return commandeDetailRepository.findAllByIdCommande(idCommande);
     }
+
+    public Iterable<CommandeDetail> findAllByCommandeAndProducteur(Long idProd, Long idCommande){
+        return commandeDetailRepository.findCommandeDetailsByCommandesAndProducteur(idProd, idCommande);
+    }
 }

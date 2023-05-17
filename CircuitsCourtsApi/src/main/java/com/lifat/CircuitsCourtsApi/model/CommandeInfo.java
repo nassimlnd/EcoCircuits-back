@@ -2,9 +2,14 @@ package com.lifat.CircuitsCourtsApi.model;
 
 import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
+import com.lifat.CircuitsCourtsApi.service.CommandeService;
 import lombok.Data;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.persistence.Entity;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -17,36 +22,43 @@ import java.util.Collection;
  *  de ce producteur.
  */
 @Data
-
 public class CommandeInfo {
-    @Autowired
-    Commande commande;
-
-    @Autowired
-    CommandeDetailService commandeDetailService;
-
-    @Autowired
-    CommandeProducteurService commandeProducteurService;
-
-    public CommandeInfo(Commande commande){
-        this.commande = commande;
-    }
-
+    private Commande commande;
+    private CommandeDetailService commandeDetailService;
+    private CommandeProducteurService commandeProducteurService;
     private Collection<CommandeDetail> commandesDetails;
 
-    private Collection<CommandeProducteur> commandesProducteur = null;
+    private Collection<CommandeProducteur> commandesProducteur;
+
+    //l'injection de dependence @Autowired ne marche pas pour les classes non gérées par spring il faut faire une injection classique
+    public CommandeInfo(Commande commande, CommandeDetailService commandeDetailService,
+                        CommandeProducteurService commandeProducteurService){
+        this.commande = commande;
+        this.commandeDetailService = commandeDetailService;
+        this.commandeProducteurService = commandeProducteurService;;
+        this.commandesDetails = new ArrayList<>();
+        this.commandesProducteur = new ArrayList<>();
+    }
 
     //remplit la collection de commande details avec toutes les commandes details
     public void fillWithCommandesDetails(){
-        this.commandesDetails.add((CommandeDetail) commandeDetailService.findAllByIdCommande(commande.getId()));
+        this.commandesDetails.clear();
+        Iterable<CommandeDetail> temp =(commandeDetailService.findAllByIdCommande(commande.getId()));
+        for (CommandeDetail cd: temp) {
+            commandesDetails.add(cd);
+        }
     }
 
     //remplit la collection de CommandeDetails avec les commandes details du producteur
-    //remplie la collection de CommandesProducteur avec les bonnes CommandesProducteur
-    public void fillWithCommandeDetailsByPRod(Long idProducteur){
-        this.commandesProducteur.add((CommandeProducteur) commandeProducteurService.findByIdProducteur(idProducteur));
-        for (CommandeProducteur cp: commandesProducteur) {
-            commandeDetailService.findById(cp.getIdCommandeDetails());
+    //remplit la collection de CommandesProducteur avec les bonnes CommandesProducteur
+    public void fillWithCommandeDetailsAndCommandeProducteurByPRodAndCommande(Long idProducteur){
+           Iterable<CommandeDetail> temp = (commandeDetailService.findAllByCommandeAndProducteur(idProducteur, this.commande.getId()));
+        for (CommandeDetail cd: temp) {
+            commandesDetails.add(cd);
+        }
+        for (CommandeDetail cd: commandesDetails) {
+            commandesProducteur.add(commandeProducteurService.getCommandeProdByCommandeDetailAndProducteur(cd.getId(), idProducteur));
         }
     }
+
 }
