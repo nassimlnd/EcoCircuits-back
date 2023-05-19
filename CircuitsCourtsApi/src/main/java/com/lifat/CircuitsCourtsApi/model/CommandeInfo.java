@@ -1,6 +1,11 @@
 package com.lifat.CircuitsCourtsApi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
 import com.lifat.CircuitsCourtsApi.service.CommandeService;
@@ -26,9 +31,11 @@ import java.util.Collection;
 @Data
 public class CommandeInfo {
     private Commande commande;
+
     //premet de ne pas metre le contenu dans le json envoyé dans la requete fasterxml.jacksonAnnotation
     @JsonIgnore
     private CommandeDetailService commandeDetailService;
+
     @JsonIgnore
     private CommandeProducteurService commandeProducteurService;
     private Collection<CommandeDetail> commandesDetails;

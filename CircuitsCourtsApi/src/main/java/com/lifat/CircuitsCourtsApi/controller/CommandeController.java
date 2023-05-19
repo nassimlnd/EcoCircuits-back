@@ -1,5 +1,8 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
 import com.lifat.CircuitsCourtsApi.model.CommandeInfo;
@@ -199,6 +202,21 @@ public class CommandeController {
         return ResponseEntity.ok(commandeInfos);
     }
 
- 
+    /**
+     * mise a jour partielle de la commande spécifiée
+     * @param id de la commande
+     * @return la nouvelle commande
+     */
+    @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
+    @PatchMapping(path ="/commande/update/{id}", consumes  = "application/json-patch+json")
+    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody JsonPatch patch) throws JsonPatchException, JsonProcessingException {
+        Commande c = commandeService.getCommande(id);
+        if (c == null){
+            return ResponseEntity.badRequest().body("commande n°"+id+" n'existe pas");
+        }
+        Commande patchedCommande = commandeService.applyPatchToCommande(patch, c);
+        commandeService.saveCommande(patchedCommande);
+        return ResponseEntity.ok().body(patchedCommande);
+    }
 
 }
