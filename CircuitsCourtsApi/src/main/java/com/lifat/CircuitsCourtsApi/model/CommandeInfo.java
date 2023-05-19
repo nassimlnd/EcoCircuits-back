@@ -54,6 +54,16 @@ public class CommandeInfo {
         }
     }
 
+    //repmlit la collection commandes producteur avec toutes les commandeProducteur.
+    public void fillWithCommandesProducteur(){
+        this.commandesProducteur.clear();
+        Iterable<CommandeProducteur> temp = (commandeProducteurService.findAllByIdCommande(commande.getId()));
+        for (CommandeProducteur cp : temp) {
+            commandesProducteur.add(cp);
+        }
+    }
+
+
     //remplit la collection de CommandeDetails avec les commandes details du producteur
     //remplit la collection de CommandesProducteur avec les bonnes CommandesProducteur
     public void fillWithCommandeDetailsAndCommandeProducteurByPRodAndCommande(Long idProducteur){

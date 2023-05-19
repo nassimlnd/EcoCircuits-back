@@ -165,8 +165,8 @@ public class CommandeController {
 
     //obtient les commandes par producteur et toutes les commandes details et producteur associées
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole('PRODUCTEUR')")
-    @GetMapping("/commandesByProducteur/{id}")
-    public ResponseEntity<?> getCommandesByProducteurId(@PathVariable Long id){
+    @GetMapping("/commandesInfo/producteur/{id}")
+    public ResponseEntity<?> getCommandesInfoByProducteurId(@PathVariable Long id){
 
         //recupere toutes les commandes du producteur
         Collection<Commande> commandes = (Collection<Commande>) commandeService.getAllCommandesByProd(id);
@@ -179,4 +179,26 @@ public class CommandeController {
         }
         return ResponseEntity.ok(commandesInfo);
     }
+
+    /***
+     * recupere toutes les commandes de la bd avec leurs commandesDetails et commandesProducteurs
+     * et crée une commande info pour chaque commande.
+     * @return collection de commandeInfo
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIASTEUR')")
+    @GetMapping("/commandesInfo")
+    public ResponseEntity<Collection<CommandeInfo>> getCommandesInfo(){
+        Collection<CommandeInfo> commandeInfos = new ArrayList<>();
+        Collection<Commande> commandes = (Collection<Commande>) commandeService.getCommandes();
+        for (Commande c : commandes) {
+            CommandeInfo oneCommandeInfo = new CommandeInfo(c, commandeDetailService, commandeProducteurService);
+            oneCommandeInfo.fillWithCommandesDetails();
+            oneCommandeInfo.fillWithCommandesProducteur();
+            commandeInfos.add(oneCommandeInfo);
+        }
+        return ResponseEntity.ok(commandeInfos);
+    }
+
+ 
+
 }
