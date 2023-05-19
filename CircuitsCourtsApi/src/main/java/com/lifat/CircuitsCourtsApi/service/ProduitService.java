@@ -5,6 +5,8 @@ import com.lifat.CircuitsCourtsApi.repository.ProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service
 public class ProduitService {
 
@@ -28,4 +30,7 @@ public class ProduitService {
         produitRepository.deleteById(id);
     }
 
+    public Collection<Produit> getProduitsByProducteur(Long idProducteur){
+        return produitRepository.findProduitsByProducteur(idProducteur);
+    }
 }
