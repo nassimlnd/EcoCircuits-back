@@ -1,7 +1,11 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.Produit;
 import com.lifat.CircuitsCourtsApi.service.ProduitService;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,6 +51,19 @@ public class ProduitController {
     public ResponseEntity<Collection<Produit>> getProduitsByProducteurs(@PathVariable Long id){
         Collection<Produit> produits =  produitService.getProduitsByProducteur(id);
         return ResponseEntity.ok().body(produits);
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole ('PRODUCTEUR')")
+    @PatchMapping(path = "/produits/{id}", consumes  = "application/json-patch+json")
+    public ResponseEntity<?> updateProduit(@PathVariable Long id, @RequestBody JsonPatch patch) throws JsonPatchException, JsonProcessingException {
+        Produit produit = produitService.getProduit(id);
+        if(produit == null){
+            return ResponseEntity.badRequest().body("Le produit n°"+id+" n'existe pas.");
+        }
+        Produit updateProduit = produitService.applyPatchToProduit(patch, produit);
+        produitService.saveProduit(updateProduit);
+        return ResponseEntity.ok().body(updateProduit);
     }
 
 }

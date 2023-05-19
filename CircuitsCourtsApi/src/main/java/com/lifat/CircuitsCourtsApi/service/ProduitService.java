@@ -1,5 +1,11 @@
 package com.lifat.CircuitsCourtsApi.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.Produit;
 import com.lifat.CircuitsCourtsApi.repository.ProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +38,12 @@ public class ProduitService {
 
     public Collection<Produit> getProduitsByProducteur(Long idProducteur){
         return produitRepository.findProduitsByProducteur(idProducteur);
+    }
+
+    @Autowired
+    private ObjectMapper objectMapper;
+    public Produit applyPatchToProduit(JsonPatch patch, Produit targetProduit) throws JsonPatchException, JsonProcessingException {
+        JsonNode patched = patch.apply(objectMapper.convertValue(targetProduit, JsonNode.class));
+        return objectMapper.treeToValue(patched, Produit.class);
     }
 }
