@@ -39,8 +39,8 @@ public class CommandeService {
         return savedCommande;
     }
 
-    public Commande getCommande(final Long id) {
-        return commandeRepository.findById(id).get();
+    public Optional<Commande> getCommande(final Long id) {
+        return commandeRepository.findById(id);
     }
 
     public void deleteCommande(final Long id) {
@@ -76,13 +76,18 @@ public class CommandeService {
     // -------------------- verification de la commande --------------------
 
 
-    //TODO : apeller toutes les autres méthodes de verif pour etablie la verification complète de la commande.
+    //TODO : apeller toutes les autres méthodes de verif pour etablire la verification complète de la commande.
     public boolean doesProductCanFillThisCommande(Long idProduit, Long idProducteur, Long qte) {
 
         return false;
     }
 
-    public boolean doesProducteurExist(Long idProduit, Long idProducteur) {
+    /**
+     * Verifie que le producteur existe bien.
+     * @param idProducteur le producteur
+     * @return true si le producteur existe.
+     */
+    public boolean doesProducteurExist(Long idProducteur) {
         Optional<Producteur> producteur = producteurRepository.findById(idProducteur);
         //verifie si l'objet Optinal<Producteur> existe, si oui on cherche le produit chez le producteur
         if (producteur.isPresent()) {
@@ -90,6 +95,7 @@ public class CommandeService {
         } else return false;
     }
 
+    //TODO : dans le cas ou plusieurs producteurs completent une commande il faut les trier du plus proche au plus loin du producteur initial.
     /**
      * Verifie que le producteur à bien le produit voulu avec assez de stock.
      * si le producteur de possede pas une quantite suffisante du produit alors
@@ -131,6 +137,7 @@ public class CommandeService {
     }
 
 
+    //sprint 2
     //TODO : verifie que la date de la commande < date livraison.
     public void verifDate(){
 
@@ -140,4 +147,5 @@ public class CommandeService {
     public void verifClient(){
 
     }
+
 }
