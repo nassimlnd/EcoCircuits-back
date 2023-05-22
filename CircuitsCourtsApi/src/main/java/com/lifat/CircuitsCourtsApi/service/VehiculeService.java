@@ -5,6 +5,8 @@ import com.lifat.CircuitsCourtsApi.repository.VehiculeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class VehiculeService {
     @Autowired
@@ -14,13 +16,12 @@ public class VehiculeService {
         return vehiculeRepository.findAll();
     }
 
-    public Vehicule getVehiculeById(Long id){
-        return vehiculeRepository.findById(id).get();
+    public Optional<Vehicule> getVehiculeById(Long id){
+        return vehiculeRepository.findById(id);
     }
 
     public Vehicule saveVehicule(Vehicule vehicule){
-        Vehicule savedVehicule = vehiculeRepository.save(vehicule);
-        return vehicule;
+        return vehiculeRepository.save(vehicule);
     }
 
     public void deletVehiculeById(Long id){

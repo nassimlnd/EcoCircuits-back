@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class ProduitService {
@@ -24,12 +25,11 @@ public class ProduitService {
     }
 
     public Produit saveProduit(Produit produit) {
-        Produit savedProduit = produitRepository.save(produit);
-        return savedProduit;
+        return produitRepository.save(produit);
     }
 
-    public Produit getProduit(final Long id) {
-        return produitRepository.findById(id).get();
+    public Optional<Produit> getProduit(final Long id) {
+        return produitRepository.findById(id);
     }
 
     public void deleteProduit(final Long id) {
@@ -42,8 +42,12 @@ public class ProduitService {
 
     @Autowired
     private ObjectMapper objectMapper;
-    public Produit applyPatchToProduit(JsonPatch patch, Produit targetProduit) throws JsonPatchException, JsonProcessingException {
+    public Produit applyPatchToProduit(JsonPatch patch, Optional<Produit> targetProduit) throws JsonPatchException, JsonProcessingException {
         JsonNode patched = patch.apply(objectMapper.convertValue(targetProduit, JsonNode.class));
         return objectMapper.treeToValue(patched, Produit.class);
+    }
+
+    public void update(Produit updatedProduit) {
+        produitRepository.save(updatedProduit);
     }
 }

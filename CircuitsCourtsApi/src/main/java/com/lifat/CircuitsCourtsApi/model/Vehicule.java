@@ -32,7 +32,4 @@ public class Vehicule {
     @Digits(integer = 10, fraction = 0)
     private int id_producteur;
 
-
-
-
 }

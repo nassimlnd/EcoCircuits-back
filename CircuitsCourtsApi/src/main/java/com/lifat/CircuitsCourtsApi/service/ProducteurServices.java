@@ -2,9 +2,13 @@ package com.lifat.CircuitsCourtsApi.service;
 
 import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.Producteur;
+import com.lifat.CircuitsCourtsApi.model.Produit;
 import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class ProducteurServices {
@@ -15,8 +19,8 @@ public class ProducteurServices {
         return producteurRepository.findAll();
     }
 
-    public Producteur getProducteurById(Long id){
-        return producteurRepository.findById(id).get();
+    public Optional<Producteur> getProducteurById(Long id){
+        return producteurRepository.findById(id);
     }
 
     public Producteur saveProducteur(Producteur producteur){
@@ -28,5 +32,7 @@ public class ProducteurServices {
         producteurRepository.deleteById(id);
     }
 
-
+    public Collection<Producteur> getAllProducteurdByProduits(Long idProduit){
+        return producteurRepository.findAllByProduit(idProduit);
+    }
 }
