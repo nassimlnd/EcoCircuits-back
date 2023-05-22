@@ -47,10 +47,17 @@ public class CommandeInfo {
                         CommandeProducteurService commandeProducteurService){
         this.commande = commande;
         this.commandeDetailService = commandeDetailService;
-        this.commandeProducteurService = commandeProducteurService;;
+        this.commandeProducteurService = commandeProducteurService;
         this.commandesDetails = new ArrayList<>();
         this.commandesProducteur = new ArrayList<>();
     }
+    //sert pour recuperer une commandeInfo envoyée depuis le front
+    public CommandeInfo(Commande commande){
+        this.commande = commande;
+        this.commandesDetails = new ArrayList<>();
+        this.commandesProducteur = new ArrayList<>();
+    }
+
 
     //remplit la collection de commande details avec toutes les commandes details
     public void fillWithCommandesDetails(){

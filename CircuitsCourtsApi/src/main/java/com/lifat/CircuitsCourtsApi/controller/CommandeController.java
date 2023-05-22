@@ -8,8 +8,10 @@ import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
 import com.lifat.CircuitsCourtsApi.model.CommandeInfo;
 import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
 import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
+import com.lifat.CircuitsCourtsApi.service.CommandeInfoService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
 import com.lifat.CircuitsCourtsApi.service.CommandeService;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 //@CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -28,6 +31,9 @@ public class CommandeController {
     private CommandeDetailService commandeDetailService;
     @Autowired
     private CommandeProducteurService commandeProducteurService;
+
+    @Autowired
+    private CommandeInfoService commandeInfoService;
 
     //Commandes
     @GetMapping("/commandes")
@@ -202,21 +208,22 @@ public class CommandeController {
         return ResponseEntity.ok(commandeInfos);
     }
 
+
     /**
      * mise a jour partielle de la commande spécifiée
      * @param id de la commande
      * @return la nouvelle commande
      */
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
-    @PatchMapping(path ="/commande/update/{id}", consumes  = "application/json-patch+json")
-    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody JsonPatch patch) throws JsonPatchException, JsonProcessingException {
-        Commande c = commandeService.getCommande(id);
-        if (c == null){
-            return ResponseEntity.badRequest().body("commande n°"+id+" n'existe pas");
+    @PutMapping("/commande/update/{id}")
+    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody CommandeInfo commandeInfo){
+        //la commande est obligatoirement crée avec une commandeInfo donc si la commande n'existe pas il n'y à pas de commandeInfo
+        Optional<Commande> c = commandeService.getCommande(id);
+        if (!c.isPresent()){
+            return ResponseEntity.notFound().build();
         }
-        Commande patchedCommande = commandeService.applyPatchToCommande(patch, c);
-        commandeService.saveCommande(patchedCommande);
-        return ResponseEntity.ok().body(patchedCommande);
+        CommandeInfo updateCommandeInfo = commandeInfoService.updateCommandeInfo(commandeInfo);
+        return ResponseEntity.ok().body(updateCommandeInfo);
     }
 
 }
