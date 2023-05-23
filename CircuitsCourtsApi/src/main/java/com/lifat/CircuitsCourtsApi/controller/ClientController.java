@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -50,5 +51,12 @@ public class ClientController {
     @PostMapping("/clients")
     public ResponseEntity<?> saveClient(@RequestBody Client client) throws Exception {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.saveClient(client));
+    }
+
+    @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
+    @DeleteMapping("/clients/{id}")
+    public ResponseEntity<?> deleteClient(@PathVariable Long id) {
+        clientService.deleteClient(id);
+        return ResponseEntity.ok("Client with id " + id + " has been deleted.");
     }
 }
