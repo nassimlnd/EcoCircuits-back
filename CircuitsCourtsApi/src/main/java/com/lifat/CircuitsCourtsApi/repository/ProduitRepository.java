@@ -25,4 +25,5 @@ public interface ProduitRepository extends CrudRepository<Produit, Long> {
 
     @Query(value = "SELECT quantite FORM produits_producteurs pp WHERE pp.id_producteur = :idProd AND pp.id_produit =:idProduit", nativeQuery = true)
     float fintQteByProduitAndProducteurs(@Param("idProd") Long idProducteur, @Param("idProduit") Long idProduit);
+
 }

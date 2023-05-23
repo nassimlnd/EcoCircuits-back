@@ -4,7 +4,10 @@ import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 @Entity
@@ -49,4 +52,8 @@ public class Produit {
 
     @Column(name = "description")
     private String description;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "producteur")
+    private Set<ProduitsProducteurs> lesProducteurs;
 }

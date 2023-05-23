@@ -5,6 +5,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -40,4 +41,8 @@ public class Producteur {
     @Column(name = "rayon_livraison")
     private Float rayon_Livraison;
 
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "produit")
+    private Set<ProduitsProducteurs> lesProduits;
 }

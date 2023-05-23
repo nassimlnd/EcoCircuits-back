@@ -6,10 +6,12 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.Produit;
 import com.lifat.CircuitsCourtsApi.service.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -20,6 +22,16 @@ public class ProduitController {
 
     @Autowired
     private ProduitService produitService;
+
+    @GetMapping("/produits/{id}")
+    public ResponseEntity<?> getProduitById(@PathVariable Long id){
+        Optional<Produit> existingProduct= produitService.getProduit(id);
+        if(existingProduct.isEmpty()){
+            return ResponseEntity.badRequest().body("le produit n°" + id + " n'existe pas");
+        }
+
+        return ResponseEntity.ok().body(produitService.getProduit(id).get());
+    }
 
 
     /**
@@ -55,7 +67,7 @@ public class ProduitController {
             ResponseEntity.badRequest().body("le produit n°" + id + "n'existe pas");
         }
         produitService.deleteProduit(id);
-        return ResponseEntity.ok("Produit with id " + id + " has been deleted.");
+        return ResponseEntity.noContent().build();
     }
 
 
@@ -93,21 +105,5 @@ public class ProduitController {
         return ResponseEntity.ok().body(updateProduit);
     }
 
-    /**
-     * update un parduit avec un put(update complete)
-     * @param id id du produit a modifier
-     * @param produit le nouveau produit a sauvegarder
-     * @return le nouveau produit
-     */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole ('PRODUCTEUR')")
-    @PutMapping("/proudits/update/{id}")
-    public ResponseEntity<?> updateProduit(@PathVariable Long id, @RequestBody Produit produit){
-        Optional<Produit> existingProduit = produitService.getProduit(id);
-        if(existingProduit.isEmpty()){
-            return ResponseEntity.badRequest().body("le produit n°" + id +" n'existe pas.");
-        }
-        produitService.update(produit);
-        return ResponseEntity.ok().body(produit);
-    }
 
 }

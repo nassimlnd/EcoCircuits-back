@@ -47,7 +47,7 @@ public class ProduitService {
         return objectMapper.treeToValue(patched, Produit.class);
     }
 
-    public void update(Produit updatedProduit) {
+    public void save(Produit updatedProduit) {
         produitRepository.save(updatedProduit);
     }
 }

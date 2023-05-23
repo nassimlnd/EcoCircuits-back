@@ -6,6 +6,8 @@ import com.lifat.CircuitsCourtsApi.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ClientService {
 
@@ -24,8 +26,8 @@ public class ClientService {
         return savedClient;
     }
 
-    public Client getClient(final Long id) {
-        return clientRepository.findById(id).get();
+    public Optional<Client> getClient(final Long id) {
+        return clientRepository.findById(id);
     }
 
     public void deleteClient(final Long id) {
