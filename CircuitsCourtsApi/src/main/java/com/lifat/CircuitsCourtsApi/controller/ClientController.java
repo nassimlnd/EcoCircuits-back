@@ -1,7 +1,9 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
+import com.lifat.CircuitsCourtsApi.model.Client;
 import com.lifat.CircuitsCourtsApi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,5 +34,11 @@ public class ClientController {
     @GetMapping("/clients/{id}/commandes")
     public ResponseEntity<?> getClientCommandes(@PathVariable Long id) throws Exception {
             return ResponseEntity.ok(clientService.getClientCommandes(id));
+    }
+
+    @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
+    @PostMapping("/clients")
+    public ResponseEntity<?> saveClient(@RequestBody Client client) throws Exception {
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.saveClient(client));
     }
 }
