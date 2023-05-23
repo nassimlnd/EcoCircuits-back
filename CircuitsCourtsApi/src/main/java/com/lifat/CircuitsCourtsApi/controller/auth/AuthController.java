@@ -12,6 +12,7 @@ import com.lifat.CircuitsCourtsApi.repository.UserRepository;
 import com.lifat.CircuitsCourtsApi.security.jwt.JwtUtils;
 import com.lifat.CircuitsCourtsApi.security.services.UserDetailsImpl;
 import com.lifat.CircuitsCourtsApi.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
+@Slf4j
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -59,6 +61,8 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
+
+        log.info("User " + loginRequest.getUsername() + " logged in.");
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
