@@ -1,8 +1,6 @@
 package com.lifat.CircuitsCourtsApi.service;
 
-import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.Producteur;
-import com.lifat.CircuitsCourtsApi.model.Produit;
 import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,7 @@ public class ProducteurServices {
     }
 
 
-    public Float getQteProduit(Long idProd, Long idProduit){
+    public Optional<Float> getQteProduit(Long idProd, Long idProduit){
         return producteurRepository.getQteProduit(idProd, idProduit);
     }
     public void updateQteProduit(Long idProd, Long idProduit, Float qte){

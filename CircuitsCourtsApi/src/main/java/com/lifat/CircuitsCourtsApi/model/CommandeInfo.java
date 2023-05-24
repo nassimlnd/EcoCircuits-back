@@ -1,6 +1,7 @@
 package com.lifat.CircuitsCourtsApi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +11,7 @@ import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
 import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
 import com.lifat.CircuitsCourtsApi.service.CommandeService;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,7 +31,9 @@ import java.util.Collection;
  *  de ce producteur.
  */
 @Data
+@NoArgsConstructor
 public class CommandeInfo {
+    @JsonProperty("commande")
     private Commande commande;
 
     //premet de ne pas metre le contenu dans le json envoyé dans la requete fasterxml.jacksonAnnotation
@@ -38,8 +42,11 @@ public class CommandeInfo {
 
     @JsonIgnore
     private CommandeProducteurService commandeProducteurService;
+
+    @JsonProperty("commandesDetails")
     private Collection<CommandeDetail> commandesDetails;
 
+    @JsonProperty("commandesProducteur")
     private Collection<CommandeProducteur> commandesProducteur;
 
     //l'injection de dependence @Autowired ne marche pas pour les classes non gérées par spring il faut faire une injection classique
@@ -56,6 +63,12 @@ public class CommandeInfo {
         this.commande = commande;
         this.commandesDetails = new ArrayList<>();
         this.commandesProducteur = new ArrayList<>();
+    }
+
+    public CommandeInfo(Commande commande, ArrayList<CommandeDetail> commandeDetail, ArrayList<CommandeProducteur> commandeProducteurs) {
+        this.commande = commande;
+        this.commandesDetails = commandeDetail;
+        this.commandesProducteur = commandeProducteurs;
     }
 
 

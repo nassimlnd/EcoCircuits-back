@@ -5,9 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.lifat.CircuitsCourtsApi.model.Commande;
-import com.lifat.CircuitsCourtsApi.model.Producteur;
-import com.lifat.CircuitsCourtsApi.model.Produit;
+import com.lifat.CircuitsCourtsApi.model.*;
+import com.lifat.CircuitsCourtsApi.repository.ClientRepository;
 import com.lifat.CircuitsCourtsApi.repository.CommandeRepository;
 import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
 import com.lifat.CircuitsCourtsApi.repository.ProduitRepository;
@@ -29,6 +28,12 @@ public class CommandeService {
 
     @Autowired
     private ProduitRepository produitRepository;
+
+    @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
+    private CommandeDetailService commandeDetailService;
 
     public Iterable<Commande> getCommandes() {
         return commandeRepository.findAll();
@@ -76,10 +81,40 @@ public class CommandeService {
     // -------------------- verification de la commande --------------------
 
 
-    //TODO : apeller toutes les autres méthodes de verif pour etablire la verification complète de la commande.
-    public boolean doesProductCanFillThisCommande(Long idProduit, Long idProducteur, Long qte) {
+    //TODO : verif proncipale
 
-        return false;
+    /**
+     * verifie l'existence du client, des producteurs et des produits
+     * verifie pour chaque commandeProducteur si stock producteur >= commandeProducteur quantite
+     * verifie que la quantite de la commandeDetail == somme des quantitees des commandesProd associees
+     * verifie pour chaque producteur qu'il sont dans leurs rayon de livraison respectif
+     * @param commandeInfo
+     * @return boolean si la commandeInfo est valide
+     */
+    public boolean verifCommandeInfo(CommandeInfo commandeInfo) throws Exception {
+        if(!commandeRepository.existsById(commandeInfo.getCommande().getId())){
+            //verification de l'existence du client
+            if (doesClientExist(commandeInfo.getCommande().getIdClient())) {
+                //verification de l'existence des produits
+                Collection<CommandeDetail> commandesDetails = commandeInfo.getCommandesDetails();
+                for (CommandeDetail cc : commandesDetails) {
+                    doesProduitExist(cc.getIdProduit());
+                }
+                //verification de l'existence de chaque producteurs affectés à la commande et si leurs stock >= quantite commandeProd
+                Collection<CommandeProducteur> commandesProd = commandeInfo.getCommandesProducteur();
+                for (CommandeProducteur cp : commandesProd) {
+                    doesProducteurExist(cp.getIdProducteur());
+                    Optional<CommandeDetail> commandesDetail = commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails());
+                    if(commandesDetail.isPresent()){
+                        doesPorducteurHaveEnough(cp.getIdProducteur(), commandesDetail.get().getId(), cp.getQuantite());
+                    }
+                    return false;
+                }
+
+            }
+            return false;
+        }
+      throw new Exception("La commande n°" + commandeInfo.getCommande().getId() + " existe déjà");
     }
 
     /**
@@ -87,15 +122,15 @@ public class CommandeService {
      * @param idProducteur le producteur
      * @return true si le producteur existe.
      */
-    public boolean doesProducteurExist(Long idProducteur) {
-        Optional<Producteur> producteur = producteurRepository.findById(idProducteur);
-        //verifie si l'objet Optinal<Producteur> existe, si oui on cherche le produit chez le producteur
-        if (producteur.isPresent()) {
+    public boolean doesProducteurExist(Long idProducteur) throws Exception {
+        if (producteurRepository.findById(idProducteur).isPresent()) {
             return true;
-        } else return false;
+        } else throw new Exception("Le producteur n°" + idProducteur + " n'existe pas");
     }
 
+
     //TODO : dans le cas ou plusieurs producteurs completent une commande il faut les trier du plus proche au plus loin du producteur initial.
+
     /**
      * Verifie que le producteur à bien le produit voulu avec assez de stock.
      * si le producteur de possede pas une quantite suffisante du produit alors
@@ -104,32 +139,32 @@ public class CommandeService {
      *
      * @param idProduit    le produit voulu.
      * @param idProducteur le producteur voulu.
-     * @param qte          la quantité voulu du produit.
+     * @param //qte        la quantité voulu du produit.
      * @return une liste contenant le ou les producteurs qui satisfont la commande.
+     * <p>
+     * public Collection<Optional<Producteur>> validationProduitForProducteur(Long idProduit, Long idProducteur, Long qte) throws Exception {
+     * Optional<Producteur> producteur = producteurRepository.findById(idProducteur);
+     * //verifie si l'objet Optinal<Producteur> existe, si oui on cherche le produit chez le producteur
+     * if (producteur.isPresent()) {
+     * Collection<Optional<Producteur>> producteurs = new ArrayList<>();
+     * Optional<Produit> p = produitRepository.findProduitByIdProduitAndProducteur(idProducteur, idProduit);
+     * //si ce producteur possede un quantite suffisante du produit alors il est le seul dans la liste.
+     * if (p.isPresent() && getQuantiteByProduitId(idProduit, idProducteur) >= qte) {
+     * producteurs.add(producteur);
+     * //si le producteur ne possede pas une quantite suffisante du produit.
+     * } else if (getQuantiteByProduitId(idProduit, idProducteur) < qte) {
+     * Collection<Producteur> producteursCandidat = producteurRepository.findAllByProduit(idProduit);
+     * float quantiteActuelle = 0;
+     * for (Producteur producteurCandidat : producteursCandidat) {
+     * quantiteActuelle += produitRepository.fintQteByProduitAndProducteurs(producteurCandidat.getId_Producteur(), idProduit);
+     * if (quantiteActuelle >= qte) break;
+     * }
+     * return producteurs;
+     * }
+     * }
+     * throw new Exception("Pas assez de producteurs pou satisfaire la commande");
+     * }
      */
-    public Collection<Optional<Producteur>> validationProduitForProducteur(Long idProduit, Long idProducteur, Long qte) throws Exception {
-        Optional<Producteur> producteur = producteurRepository.findById(idProducteur);
-        //verifie si l'objet Optinal<Producteur> existe, si oui on cherche le produit chez le producteur
-        if (producteur.isPresent()) {
-            Collection<Optional<Producteur>> producteurs = new ArrayList<>();
-            Optional<Produit> p = produitRepository.findProduitByIdProduitAndProducteur(idProducteur, idProduit);
-            //si ce producteur possede un quantite suffisante du produit alors il est le seul dans la liste.
-            if (p.isPresent() && getQuantiteByProduitId(idProduit, idProducteur) >= qte) {
-                producteurs.add(producteur);
-                //si le producteur ne possede pas une quantite suffisante du produit.
-            } else if (getQuantiteByProduitId(idProduit, idProducteur) < qte) {
-                Collection<Producteur> producteursCandidat = producteurRepository.findAllByProduit(idProduit);
-                float quantiteActuelle = 0;
-                for (Producteur producteurCandidat : producteursCandidat) {
-                    quantiteActuelle += produitRepository.fintQteByProduitAndProducteurs(producteurCandidat.getId_Producteur(), idProduit);
-                    if (quantiteActuelle >= qte) break;
-                }
-                return producteurs;
-            }
-        }
-        throw new Exception("Pas assez de producteurs pou satisfaire la commande");
-    }
-
 
     //recupere la quantité possédée par un producteur d'un produit
     public float getQuantiteByProduitId(Long idProduit, Long idProducteur) {
@@ -138,14 +173,35 @@ public class CommandeService {
 
 
     //sprint 2
-    //TODO : verifie que la date de la commande < date livraison.
-    public void verifDate(){
+    //TODO : verifie que la date de la commande < date livraison de tournee.
+    public void verifDate() {
 
     }
 
-    //TODO : verifie que le client existe bien.
-    public void verifClient(){
+    public boolean doesClientExist(Long idClient) throws Exception {
+        if (clientRepository.findById(idClient).isPresent()) {
+            return true;
+        } else throw new Exception("Le client n°" + idClient + " n'existe pas");
+    }
 
+    public boolean doesProduitExist(Long idProduit) throws Exception {
+        if (produitRepository.findById(idProduit).isPresent()) {
+            return true;
+        } else throw new Exception("Le produit n°" + idProduit + " n'existe pas");
+    }
+
+
+    //TODO : verification que le rayon de livraison du ou des producteur > distance producteurs/Client.
+    public boolean doesProducteurCanDelivery(Float rayonLivraison, Float distance) {
+        return false;
+    }
+
+    public boolean doesPorducteurHaveEnough(Long idproducteur, Long idProduit, Float quantite) throws Exception {
+        Optional<Float> optionalQte = producteurRepository.getQteProduit(idproducteur, idProduit);
+        if (optionalQte.isPresent() && optionalQte.get() >= quantite){
+            return true;
+        }
+        else throw new Exception("le producteur n°" + idproducteur + " n'a pas le produit n°" + idproducteur + " en quantite suffiante");
     }
 
 }

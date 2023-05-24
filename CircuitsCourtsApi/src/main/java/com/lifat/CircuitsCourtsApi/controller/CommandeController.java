@@ -7,10 +7,7 @@ import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
 import com.lifat.CircuitsCourtsApi.model.CommandeInfo;
 import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
-import com.lifat.CircuitsCourtsApi.service.CommandeDetailService;
-import com.lifat.CircuitsCourtsApi.service.CommandeInfoService;
-import com.lifat.CircuitsCourtsApi.service.CommandeProducteurService;
-import com.lifat.CircuitsCourtsApi.service.CommandeService;
+import com.lifat.CircuitsCourtsApi.service.*;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +31,9 @@ public class CommandeController {
 
     @Autowired
     private CommandeInfoService commandeInfoService;
+
+    @Autowired
+    private ProducteurServices producteurServices;
 
     //Commandes
     @GetMapping("/commandes")
@@ -179,10 +179,10 @@ public class CommandeController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole('PRODUCTEUR')")
     @GetMapping("/commandesInfo/producteur/{id}")
     public ResponseEntity<?> getCommandesInfoByProducteurId(@PathVariable Long id) {
-    //une commandeInfo est créée à partir d'une commande obligatoirement,si pas de commandes pas de commande info.
+        //une commandeInfo est créée à partir d'une commande obligatoirement,si pas de commandes pas de commande info.
         Optional<Commande> existingCommande = commandeService.getCommande(id);
-        if(existingCommande.isEmpty()){
-            return ResponseEntity.badRequest().body("la commande n°"+ id+ " n'existe pas");
+        if (existingCommande.isEmpty()) {
+            return ResponseEntity.badRequest().body("la commande n°" + id + " n'existe pas");
         }
         //recupere toutes les commandes du producteur
         Collection<Commande> commandes = (Collection<Commande>) commandeService.getAllCommandesByProd(id);
@@ -199,6 +199,7 @@ public class CommandeController {
     /**
      * recupere toutes les commandes de la bd avec leurs commandesDetails et commandesProducteurs
      * et crée une commande info pour chaque commande.
+     *
      * @return collection de commandeInfo
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIASTEUR')")
@@ -223,14 +224,50 @@ public class CommandeController {
      */
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
     @PutMapping("/commande/update/{id}")
-    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody CommandeInfo commandeInfo) {
+    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody CommandeInfo commandeInfo) throws Exception {
         //la commande est obligatoirement crée avec une commandeInfo donc si la commande n'existe pas il n'y à pas de commandeInfo
         Optional<Commande> c = commandeService.getCommande(id);
         if (c.isEmpty()) {
             return ResponseEntity.badRequest().body("la commande n°" + id + " n'existe pas");
         }
-        CommandeInfo updateCommandeInfo = commandeInfoService.updateCommandeInfo(commandeInfo);
-        return ResponseEntity.ok().body(updateCommandeInfo);
+        try {
+            CommandeInfo updateCommandeInfo = commandeInfoService.updateCommandeInfo(commandeInfo);
+            return ResponseEntity.ok().body(updateCommandeInfo);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * enregistre une nouvelle commande
+     *
+     * @return la nouvelle commande
+     */
+    @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
+    @PostMapping("/commande/save")
+    public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) throws Exception {
+        try {
+
+            commandeService.verifCommandeInfo(commandeInfo);
+            //enregistrement de la commande
+            commandeService.saveCommande(commandeInfo.getCommande());
+            //enregistrement des commande details
+            for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
+                commandeDetailService.saveCommandeDetail(cd);
+            }
+            //enregistrement des commandes producteurs/update du stock
+            for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
+                commandeProducteurService.saveCommandeProducteur(cp);
+                //on recupere le produit de la commandeDetail de cette commandeProducteur pour obtenir le produit
+                producteurServices.updateQteProduit(cp.getIdProducteur(), commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails()).get().getIdProduit(), cp.getQuantite());
+
+            }
+
+            return ResponseEntity.ok().body(commandeInfo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

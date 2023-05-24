@@ -4,10 +4,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "commande_producteur")
+@NoArgsConstructor
 public class CommandeProducteur {
 
     @Id
@@ -23,6 +25,6 @@ public class CommandeProducteur {
     private Long idProducteur;
 
     @Column(name = "quantite")
-    private Double quantite;
+    private Float quantite;
 
 }

@@ -22,8 +22,8 @@ public class CommandeDetailService {
         return savedCommandeDetail;
     }
 
-    public CommandeDetail getCommandeDetail(final Long id) {
-        return commandeDetailRepository.findById(id).get();
+    public Optional<CommandeDetail> getCommandeDetail(final Long id) {
+        return commandeDetailRepository.findById(id);
     }
 
     public void deleteCommandeDetail(final Long id) {
