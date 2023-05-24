@@ -6,6 +6,11 @@ import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @Entity
 @Table(name = "produits")
@@ -22,17 +27,14 @@ public class Produit {
     @Column(name = "tva")
     private String tva;
 
-    @Column(name = "producteurs")
-    private String producteurs;
-
     @Column(name = "reference")
     private String reference;
 
     @Column(name = "origine_production")
     private String origineProduction;
 
-    @Column(name = "orgine_transformation")
-    private String orgineTransformation;
+    @Column(name = "origine_transformation")
+    private String origineTransformation;
 
     @Column(name = "agriculture")
     private String agriculture;

@@ -49,4 +49,16 @@ public class ClientController {
         clientService.deleteClient(id);
         return ResponseEntity.ok("Client with id " + id + " has been deleted.");
     }
+
+    @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
+    @PutMapping("/clients/{id}")
+    public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody Client client) throws Exception {
+        if (client.getId() != id) {
+            return ResponseEntity.badRequest().body("Id in path and in body are not the same.");
+        } else if (clientService.getClient(id) == null) {
+            return ResponseEntity.badRequest().body("Client with id " + id + " does not exist.");
+        }
+
+        return ResponseEntity.ok(clientService.updateClient(id, client));
+    }
 }
