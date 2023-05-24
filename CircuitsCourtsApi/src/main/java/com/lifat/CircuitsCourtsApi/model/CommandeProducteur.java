@@ -1,6 +1,7 @@
 package com.lifat.CircuitsCourtsApi.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -24,6 +25,7 @@ public class CommandeProducteur {
     @NotNull
     private Long idProducteur;
 
+    @Min(0)
     @Column(name = "quantite")
     private Float quantite;
 
