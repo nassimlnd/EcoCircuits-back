@@ -17,30 +17,30 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Pattern(regexp = "^[a-zA-Z]+(?:s[a-zA-Z]+)*$")
+
     @Column(name = "nom")
     private String nom;
 
-    @Pattern(regexp = "^[a-zA-Z]+(?:s[a-zA-Z]+)*$")
+
     @Column(name = "prenom")
     private String prenom;
 
 
-    @Pattern(regexp = "^[a-zA-Z]+(?:s[a-zA-Z]+)*$")
+
     @Column(name = "adresse")
     private String adresse;
 
-    @Min(5)
-    @Max(5)
+   // @Min(5)
+   // @Max(5)
     @Column(name = "code_postal")
     private Integer codePostal;
 
-    @Pattern(regexp = "^[0-9]{1,5}\\s[a-zA-ZÀ-ÿ0-9\\s'’-]+$")
+
     @Column(name = "ville")
     private String ville;
 
-    @Min(10)
-    @Max(10)
+    //@Min(10)
+    //@Max(10)
     @Column(name = "telephone")
     private String telephone;
 

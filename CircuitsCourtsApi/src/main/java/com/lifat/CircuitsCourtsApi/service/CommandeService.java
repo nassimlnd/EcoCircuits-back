@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.*;
-import com.lifat.CircuitsCourtsApi.repository.ClientRepository;
-import com.lifat.CircuitsCourtsApi.repository.CommandeRepository;
-import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
-import com.lifat.CircuitsCourtsApi.repository.ProduitRepository;
+import com.lifat.CircuitsCourtsApi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,37 +85,40 @@ public class CommandeService {
      * verifie pour chaque commandeProducteur si stock producteur >= commandeProducteur quantite
      * verifie que la quantite de la commandeDetail == somme des quantitees des commandesProd associees
      * verifie pour chaque producteur qu'il sont dans leurs rayon de livraison respectif
+     *
      * @param commandeInfo
      * @return boolean si la commandeInfo est valide
      */
     public boolean verifCommandeInfo(CommandeInfo commandeInfo) throws Exception {
-        if(!commandeRepository.existsById(commandeInfo.getCommande().getId())){
+        if (!commandeRepository.existsById(commandeInfo.getCommande().getId())) {
             //verification de l'existence du client
             if (doesClientExist(commandeInfo.getCommande().getIdClient())) {
                 //verification de l'existence des produits
                 Collection<CommandeDetail> commandesDetails = commandeInfo.getCommandesDetails();
                 for (CommandeDetail cc : commandesDetails) {
+                    doesCommandeDetailExist(cc.getId());
                     doesProduitExist(cc.getIdProduit());
                 }
                 //verification de l'existence de chaque producteurs affectés à la commande et si leurs stock >= quantite commandeProd
                 Collection<CommandeProducteur> commandesProd = commandeInfo.getCommandesProducteur();
                 for (CommandeProducteur cp : commandesProd) {
+                    doesCommandeProdExist(cp.getId());
                     doesProducteurExist(cp.getIdProducteur());
                     Optional<CommandeDetail> commandesDetail = commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails());
-                    if(commandesDetail.isPresent()){
-                        doesPorducteurHaveEnough(cp.getIdProducteur(), commandesDetail.get().getId(), cp.getQuantite());
+                    if (commandesDetail.isPresent()) {
+                        doesPorducteurHaveEnough(cp.getIdProducteur(), commandesDetail.get().getIdProduit(), cp.getQuantite());
                     }
                     return false;
                 }
-
             }
-            return false;
+           return false;
         }
-      throw new Exception("La commande n°" + commandeInfo.getCommande().getId() + " existe déjà");
+        throw new Exception("La commande n°" + commandeInfo.getCommande().getId() + " existe déjà");
     }
 
     /**
      * Verifie que le producteur existe bien.
+     *
      * @param idProducteur le producteur
      * @return true si le producteur existe.
      */
@@ -197,11 +197,33 @@ public class CommandeService {
     }
 
     public boolean doesPorducteurHaveEnough(Long idproducteur, Long idProduit, Float quantite) throws Exception {
-        Optional<Float> optionalQte = producteurRepository.getQteProduit(idproducteur, idProduit);
-        if (optionalQte.isPresent() && optionalQte.get() >= quantite){
-            return true;
-        }
-        else throw new Exception("le producteur n°" + idproducteur + " n'a pas le produit n°" + idproducteur + " en quantite suffiante");
+        System.out.println(produitRepository.findProduitsByProducteur(idproducteur).toString());
+        if (!produitRepository.findProduitsByProducteur(idProduit).isEmpty()) {
+            Optional<Float> optionalQte = producteurRepository.getQteProduit(idproducteur, idProduit);
+            if (optionalQte.isPresent() && optionalQte.get() >= quantite) {
+                return true;
+            } else
+                throw new Exception("le producteur n°" + idproducteur + " n'a pas le produit n°" + idProduit + " en quantite suffiante");
+        } else
+            throw new Exception("Le producteur n°" +idproducteur+ " : "+ producteurRepository.findById(idproducteur).get().getLibelle()+" ne possede pas le produit n°" + idProduit + " : " + produitRepository.findById(idProduit).get().getLibelle());
     }
 
+    @Autowired
+    private CommandeProducteurRepository commandeProducteurRepository;
+
+    @Autowired
+    private CommandeDetailRepository commandeDetailRepository;
+    public boolean doesCommandeProdExist(Long idCommandeProd) throws Exception {
+        if(!commandeProducteurRepository.existsById(idCommandeProd)){
+           return true;
+        }
+        else throw new Exception("La commandeProducteur n°"+ idCommandeProd+" existe deja");
+    }
+
+    public boolean doesCommandeDetailExist(Long idCommandeDetail) throws Exception {
+        if(!commandeDetailRepository.existsById(idCommandeDetail)){
+            return true;
+        }
+        else throw new Exception("La commandeDetail n°" + idCommandeDetail + " existe deja");
+    }
 }

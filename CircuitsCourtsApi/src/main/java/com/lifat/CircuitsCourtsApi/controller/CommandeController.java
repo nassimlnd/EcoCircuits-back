@@ -246,9 +246,8 @@ public class CommandeController {
      */
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
     @PostMapping("/commande/save")
-    public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) throws Exception {
+    public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) {
         try {
-
             commandeService.verifCommandeInfo(commandeInfo);
             //enregistrement de la commande
             commandeService.saveCommande(commandeInfo.getCommande());
@@ -263,11 +262,11 @@ public class CommandeController {
                 producteurServices.updateQteProduit(cp.getIdProducteur(), commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails()).get().getIdProduit(), cp.getQuantite());
 
             }
-
             return ResponseEntity.ok().body(commandeInfo);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
+
+
