@@ -8,11 +8,10 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.*;
 import com.lifat.CircuitsCourtsApi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.web.servlet.oauth2.resourceserver.OpaqueTokenDsl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CommandeService {
@@ -77,43 +76,76 @@ public class CommandeService {
 
     // -------------------- verification de la commande --------------------
 
-
-    //TODO : verif proncipale
-
     /**
+     * Les verifications sont utiles pour la création d'une commande
      * verifie l'existence du client, des producteurs et des produits
      * verifie pour chaque commandeProducteur si stock producteur >= commandeProducteur quantite
      * verifie que la quantite de la commandeDetail == somme des quantitees des commandesProd associees
      * verifie pour chaque producteur qu'il sont dans leurs rayon de livraison respectif
      *
      * @param commandeInfo
-     * @return boolean si la commandeInfo est valide
+     * @return boolean si la commandeInfo est valide si et seulement aucun des test ont déclenchés une exception
      */
     public boolean verifCommandeInfo(CommandeInfo commandeInfo) throws Exception {
-        if (!commandeRepository.existsById(commandeInfo.getCommande().getId())) {
-            //verification de l'existence du client
-            if (doesClientExist(commandeInfo.getCommande().getIdClient())) {
+        //on verifie que la commande n'existe pas deja
+
+        commandeExist(commandeInfo.getCommande().getId());
+        //verification de l'existence du client
+            Commande newCommande = commandeInfo.getCommande();
+            System.out.println(commandeInfo.getCommande().toString());
+            System.out.println("===================" + newCommande.getIdClient());
+            System.out.println("===================" + clientRepository.findById(newCommande.getIdClient()));
+            if (doesClientExist(newCommande.getIdClient())) {
                 //verification de l'existence des produits
-                Collection<CommandeDetail> commandesDetails = commandeInfo.getCommandesDetails();
-                for (CommandeDetail cc : commandesDetails) {
-                    doesCommandeDetailExist(cc.getId());
-                    doesProduitExist(cc.getIdProduit());
-                }
-                //verification de l'existence de chaque producteurs affectés à la commande et si leurs stock >= quantite commandeProd
-                Collection<CommandeProducteur> commandesProd = commandeInfo.getCommandesProducteur();
-                for (CommandeProducteur cp : commandesProd) {
-                    doesCommandeProdExist(cp.getId());
-                    doesProducteurExist(cp.getIdProducteur());
-                    Optional<CommandeDetail> commandesDetail = commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails());
-                    if (commandesDetail.isPresent()) {
-                        doesPorducteurHaveEnough(cp.getIdProducteur(), commandesDetail.get().getIdProduit(), cp.getQuantite());
+
+                HashMap<CommandeDetail, ArrayList<CommandeProducteur>> hashVerif = getCommandesProducteurByCommandeDetail(commandeInfo);
+                for (Map.Entry mapEntry : hashVerif.entrySet()) {
+                    CommandeDetail cd = (CommandeDetail) mapEntry.getKey();
+                    System.out.println(cd.toString());
+                    doesCommandeDetailExist(cd.getId());
+                    doesProduitExist(cd.getIdProduit());
+                    cd.setIdCommande(newCommande.getId());
+
+                    //verifications pour les commandes prod associées à cette commande detail.
+                    //verification de l'existence de chaque producteurs affectés à la commande et si leurs stock >= quantite commandeProd
+                    ArrayList<CommandeProducteur> commandesProd = (ArrayList<CommandeProducteur>) mapEntry.getValue();
+                    for (CommandeProducteur cp : commandesProd) {
+                        System.out.println(cp.toString());
+                        doesCommandeProdExist(cp.getId());
+                        doesProducteurExist(cp.getIdProducteur());
+                        if (doesPorducteurHaveEnough(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite())) {
+                            producteurRepository.updateQteProduit(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite());
+                        }
                     }
-                    return false;
                 }
             }
-           return false;
+            return true;
+    }
+
+
+    //verifie que la commande n'existe pas.
+    public boolean commandeExist(Long id) throws Exception {
+        if (commandeRepository.findById(id).isEmpty()) {
+            return true;
+        } else throw new Exception("La commande n°" + id + "existe  deja");
+    }
+
+    // recupere commandes prod d'une commande detail d'une commade info
+    public HashMap<CommandeDetail, ArrayList<CommandeProducteur>> getCommandesProducteurByCommandeDetail(CommandeInfo commandeInfo) {
+        HashMap resultHashMap = new HashMap();
+        Collection<CommandeDetail> commandeDetails = commandeInfo.getCommandesDetails();
+        for (CommandeDetail cd : commandeDetails) {
+            Long id = cd.getId();
+            ArrayList<CommandeProducteur> commandeProducteurs = new ArrayList<>();
+            for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
+                if (Objects.equals(cp.getIdCommandeDetails(), id)) {
+                    commandeProducteurs.add(cp);
+                }
+
+                resultHashMap.put(cd, commandeProducteurs);
+            }
         }
-        throw new Exception("La commande n°" + commandeInfo.getCommande().getId() + " existe déjà");
+        return resultHashMap;
     }
 
     /**
@@ -197,15 +229,15 @@ public class CommandeService {
     }
 
     public boolean doesPorducteurHaveEnough(Long idproducteur, Long idProduit, Float quantite) throws Exception {
-        System.out.println(produitRepository.findProduitsByProducteur(idproducteur).toString());
-        if (!produitRepository.findProduitsByProducteur(idProduit).isEmpty()) {
+        //System.out.println(produitRepository.findProduitsByProducteur(idproducteur).toString());
+        if (!produitRepository.findProduitsByProducteur(idproducteur).isEmpty()) {
             Optional<Float> optionalQte = producteurRepository.getQteProduit(idproducteur, idProduit);
             if (optionalQte.isPresent() && optionalQte.get() >= quantite) {
                 return true;
             } else
                 throw new Exception("le producteur n°" + idproducteur + " n'a pas le produit n°" + idProduit + " en quantite suffiante");
         } else
-            throw new Exception("Le producteur n°" +idproducteur+ " : "+ producteurRepository.findById(idproducteur).get().getLibelle()+" ne possede pas le produit n°" + idProduit + " : " + produitRepository.findById(idProduit).get().getLibelle());
+            throw new Exception("Le producteur n°" + idproducteur + " : " + producteurRepository.findById(idproducteur).get().getLibelle() + " ne possede pas le produit n°" + idProduit + " : " + produitRepository.findById(idProduit).get().getLibelle());
     }
 
     @Autowired
@@ -213,17 +245,28 @@ public class CommandeService {
 
     @Autowired
     private CommandeDetailRepository commandeDetailRepository;
+
     public boolean doesCommandeProdExist(Long idCommandeProd) throws Exception {
-        if(!commandeProducteurRepository.existsById(idCommandeProd)){
-           return true;
-        }
-        else throw new Exception("La commandeProducteur n°"+ idCommandeProd+" existe deja");
+        if (!commandeProducteurRepository.existsById(idCommandeProd)) {
+            return true;
+        } else throw new Exception("La commandeProducteur n°" + idCommandeProd + " existe deja");
     }
 
     public boolean doesCommandeDetailExist(Long idCommandeDetail) throws Exception {
-        if(!commandeDetailRepository.existsById(idCommandeDetail)){
+        if (!commandeDetailRepository.existsById(idCommandeDetail)) {
             return true;
-        }
-        else throw new Exception("La commandeDetail n°" + idCommandeDetail + " existe deja");
+        } else throw new Exception("La commandeDetail n°" + idCommandeDetail + " existe deja");
+    }
+
+
+    /**
+     * Les verifications sont utiles pour la verification lors de l'update d'une commande
+     *
+     * @param commandeInfo
+     * @return
+     * @throws Exception
+     */
+    public boolean verifCommandeInfoUpdate(CommandeInfo commandeInfo) throws Exception {
+        return false;
     }
 }

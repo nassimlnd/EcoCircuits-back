@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.Date;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "commandes")
@@ -38,4 +40,6 @@ public class Commande {
         this.idClient = idClient;
         this.dateCommande = dateCommande;
     }
+
+
 }

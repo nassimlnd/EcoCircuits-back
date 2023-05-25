@@ -3,6 +3,7 @@ package com.lifat.CircuitsCourtsApi.repository;
 
 import com.lifat.CircuitsCourtsApi.model.Producteur;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -10,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+import java.beans.Transient;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -27,7 +30,10 @@ public interface ProducteurRepository extends CrudRepository<Producteur, Long> {
      * @param idProduit
      * @param qte
      */
-    @Query(value = "UPDATE produits_producteurs SET quantite = :qte WHERE id_producteur = :idProd AND id_produit = :idProduit", nativeQuery = true)
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE produits_producteurs SET quantite = quantite - :qte WHERE id_producteur = :idProd AND id_produit = :idProduit", nativeQuery = true)
     void updateQteProduit(@Param("idProd")Long idProd, @Param("idProduit")Long idProduit, @Param("qte")Float qte);
 
     @Query(value = "SELECT quantite FROM produits_producteurs WHERE id_producteur = :idProd AND id_produit = :idProduit", nativeQuery = true)

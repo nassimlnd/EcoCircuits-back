@@ -8,6 +8,7 @@ import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
 import com.lifat.CircuitsCourtsApi.model.CommandeInfo;
 import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
 import com.lifat.CircuitsCourtsApi.service.*;
+import com.sun.source.tree.TryTree;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -224,48 +225,41 @@ public class CommandeController {
      */
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
     @PutMapping("/commande/update/{id}")
-    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody CommandeInfo commandeInfo) throws Exception {
-        //la commande est obligatoirement crée avec une commandeInfo donc si la commande n'existe pas il n'y à pas de commandeInfo
-        Optional<Commande> c = commandeService.getCommande(id);
-        if (c.isEmpty()) {
-            return ResponseEntity.badRequest().body("la commande n°" + id + " n'existe pas");
-        }
-        try {
-            CommandeInfo updateCommandeInfo = commandeInfoService.updateCommandeInfo(commandeInfo);
-            return ResponseEntity.ok().body(updateCommandeInfo);
-
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody CommandeInfo commandeInfo){
+       return ResponseEntity.badRequest().body("pas encore fait");
     }
+
 
     /**
      * enregistre une nouvelle commande
-     *
+     * met a jour le stock des producteur, leur enleve la quantite du produit demandé.
+     * @param commandeInfo : la commandeInfo à verifier et enregistrer dans la bd.
      * @return la nouvelle commande
      */
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
     @PostMapping("/commande/save")
-    public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) {
-        try {
-            commandeService.verifCommandeInfo(commandeInfo);
-            //enregistrement de la commande
-            commandeService.saveCommande(commandeInfo.getCommande());
-            //enregistrement des commande details
-            for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
-                commandeDetailService.saveCommandeDetail(cd);
-            }
-            //enregistrement des commandes producteurs/update du stock
-            for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
-                commandeProducteurService.saveCommandeProducteur(cp);
-                //on recupere le produit de la commandeDetail de cette commandeProducteur pour obtenir le produit
-                producteurServices.updateQteProduit(cp.getIdProducteur(), commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails()).get().getIdProduit(), cp.getQuantite());
+    public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) throws Exception   {
+        //try {
+            if(commandeService.verifCommandeInfo(commandeInfo)){
+                commandeService.saveCommande(commandeInfo.getCommande());
+                //enregistrement des commande details
+                for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
+                    commandeDetailService.saveCommandeDetail(cd);
+                }
+                //enregistrement des commandes producteurs/update du stock
+                for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
+                    commandeProducteurService.saveCommandeProducteur(cp);
+                    //on recupere le produit de la commandeDetail de cette commandeProducteur pour obtenir la quantité demandé de ce produit puis metre a jour le stock automatiquement
+                    producteurServices.updateQteProduit(cp.getIdProducteur(), commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails()).get().getIdProduit(), cp.getQuantite());
 
-            }
-            return ResponseEntity.ok().body(commandeInfo);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+                }
+                return ResponseEntity.ok().body(commandeInfo);
+                //ne sera jamais executé de tt facon.
+            }else return ResponseEntity.badRequest().body("erreur lors de la verification");
+
+        //} catch (Exception e) {
+          // return ResponseEntity.badRequest().body(e.getMessage());
+        //}
     }
 }
 
