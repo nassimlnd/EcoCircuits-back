@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class Producteur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_Producteur;
 
-
+    @Pattern(regexp = "^[a-zA-Z0-9\\s\\p{Punct}]+$")
     @Column(name = "description")
     private String description;
 

@@ -3,6 +3,7 @@ package com.lifat.CircuitsCourtsApi.model;
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class Vehicule {
     private Long id_vehicule;
 
     @Column(name = "matricule")
+    @Pattern(regexp = "^[A-Z]{2}-\\d{3}-[A-Z]{2}$")
     @NotNull
     private String matricule;
 

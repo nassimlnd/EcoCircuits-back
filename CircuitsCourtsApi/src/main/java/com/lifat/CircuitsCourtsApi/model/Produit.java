@@ -2,6 +2,7 @@ package com.lifat.CircuitsCourtsApi.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,6 +47,7 @@ public class Produit {
     @Column(name = "conditionnement")
     private String conditionnement;
 
+    @Min(0)
     @Column(name = "prix")
     @Digits(integer = 5, fraction = 2)
     private Float prix;
