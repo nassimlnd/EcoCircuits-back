@@ -1,9 +1,12 @@
 package com.lifat.CircuitsCourtsApi.service;
 
+import com.lifat.CircuitsCourtsApi.model.Role;
 import com.lifat.CircuitsCourtsApi.repository.UserRepository;
 import com.lifat.CircuitsCourtsApi.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -31,7 +34,4 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public User findByToken(String token){
-        return userRepository.findByToken(token);
-    }
 }

@@ -40,7 +40,7 @@ public class ClientService {
 
     public Client updateClient(Long id, Client client) {
 
-        if (getClient(id) == null) {
+        if (getClient(id).isEmpty()) {
             return null;
         }
 
