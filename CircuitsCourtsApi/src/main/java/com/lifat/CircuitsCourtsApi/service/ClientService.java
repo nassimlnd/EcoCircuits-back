@@ -44,7 +44,7 @@ public class ClientService {
             return null;
         }
 
-        Client oldClient = getClient(id);
+        Client oldClient = getClient(id).get();
         oldClient.setNom(client.getNom());
         oldClient.setPrenom(client.getPrenom());
         oldClient.setAdresse(client.getAdresse());
