@@ -14,6 +14,7 @@ import com.lifat.CircuitsCourtsApi.security.services.UserDetailsImpl;
 import com.lifat.CircuitsCourtsApi.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,7 +63,7 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        log.info("User " + loginRequest.getUsername() + " logged in.");
+        log.info("User " + loginRequest.getUsername() + " logged in using token : " + jwt);
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
@@ -93,46 +94,35 @@ public class AuthController {
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByRole(ERole.ROLE_USER.name())
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByRole(ERole.ROLE_ADMIN.name())
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
 
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByRole(ERole.ROLE_MODERATOR.name())
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
+        strRoles.forEach(role -> {
+            switch (role) {
+                case "admin":
+                    Role adminRole = roleRepository.findByRole(ERole.ROLE_ADMIN.name())
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(adminRole);
 
-                        break;
-                    case "orga":
-                        Role orgaRole = roleRepository.findByRole(ERole.ROLE_ORGANISATEUR.name())
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(orgaRole);
+                    break;
+                case "orga":
+                    Role orgaRole = roleRepository.findByRole(ERole.ROLE_ORGANISATEUR.name())
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(orgaRole);
 
-                        break;
-                    case "prod":
-                        Role prodRole = roleRepository.findByRole(ERole.ROLE_PRODUCTEUR.name())
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                    default:
-                        Role userRole = roleRepository.findByRole(ERole.ROLE_USER.name())
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
+                    break;
+                case "prod":
+                    Role prodRole = roleRepository.findByRole(ERole.ROLE_PRODUCTEUR.name())
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(prodRole);
+                    break;
+            }
+        });
+
 
         user.setRoles(roles);
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new
+                MessageResponse("User registered successfully!"));
     }
 
 

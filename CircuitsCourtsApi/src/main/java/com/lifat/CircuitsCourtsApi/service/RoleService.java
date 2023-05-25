@@ -23,6 +23,9 @@ public class RoleService {
     }
 
     public Collection<User> getUsersByRole(Long id) {
+        if (!roleRepository.findById(id).isPresent())
+            throw new RuntimeException("Role not found");
+
         return roleRepository.findById(id).get().getUsers();
     }
 

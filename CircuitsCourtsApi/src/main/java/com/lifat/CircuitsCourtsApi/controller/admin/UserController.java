@@ -44,14 +44,15 @@ public class UserController {
         return userService.save(user);
     }
 
-    /*@GetMapping("/users/{id}/roles")
-    public ResponseEntity<?> getRolesByUserId(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getRoleByUserId(id));
-    }*/
-
     @GetMapping("/roles/{id}/users")
     public ResponseEntity<?> getUsersByRole(@PathVariable Long id) {
         return ResponseEntity.ok(roleService.getUsersByRole(id));
+    }
+
+
+    @GetMapping("/users/usersRoles")
+    public ResponseEntity<?> getAllUsersWithRole() {
+        return userService.getAllUsersWithRole();
     }
 
 }
