@@ -47,13 +47,13 @@ public class Produit {
     @Column(name = "conditionnement")
     private String conditionnement;
 
+    @Column(name = "dluo")
+    private String dluo;
+
     @Min(0)
     @Column(name = "prix")
     @Digits(integer = 5, fraction = 2)
     private Float prix;
-
-    @Column(name = "description")
-    private String description;
 
     @JsonIgnore
     @OneToMany(mappedBy = "producteur")

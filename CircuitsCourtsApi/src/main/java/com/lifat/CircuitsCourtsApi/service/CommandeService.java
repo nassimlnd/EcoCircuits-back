@@ -401,5 +401,17 @@ public class CommandeService {
          else throw new Exception("La commande n°" + idCommande + " n'existe pas.");
     }
 
+    /**
+     * Récupère toutes les commandes liées à un produit d'id idProduit
+     * @param idProduit
+     * @return Iterable<CommandeDetail> les commandes liées au produit
+     * @throws Exception si le produit n'existe pas
+     */
+    public Iterable<Commande> getAllCommandesByProduit(Long idProduit) throws Exception {
+        if (produitRepository.existsById(idProduit)) {
+            return commandeRepository.findAllCommandesByProduit(idProduit);
+        } else throw new Exception("Le produit n°" + idProduit + " n'existe pas.");
+    }
+
 
 }

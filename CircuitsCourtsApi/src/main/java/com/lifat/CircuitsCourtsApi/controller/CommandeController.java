@@ -276,8 +276,8 @@ public class CommandeController {
 
     /**
      * Supprime par le biais d'une commande :  - la commande
-     *                                         - les commandes details associées
-     *                                         - les commandes producteurs associées aux commandes details
+     * - les commandes details associées
+     * - les commandes producteurs associées aux commandes details
      * Met a jour le stock
      *
      * @param id id de la commande a supprimer
@@ -286,8 +286,8 @@ public class CommandeController {
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @DeleteMapping("/commandesInfo/delete/{id}")
-    public ResponseEntity<?> deletCommandeInfo(@PathVariable Long id){
-        try{
+    public ResponseEntity<?> deletCommandeInfo(@PathVariable Long id) {
+        try {
             CommandeInfo deletCommande = commandeService.getCommandeInfo(id);
             commandeService.deletCommandeInfo(deletCommande.getCommande().getId());
             return ResponseEntity.noContent().build();
@@ -295,6 +295,21 @@ public class CommandeController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
 
+        }
+    }
+
+    /**
+     * Envoie les commandes liées à un produit d'id idProduit
+     * @param idProduit id du produit
+     * @return les commandes liées à un produit d'id idProduit
+     */
+    @GetMapping("/commandes/produit/{idProduit}")
+    public ResponseEntity<?> getAllCommandesByProduit(@PathVariable Long idProduit) {
+        try {
+            Iterable<Commande> commandes = commandeService.getAllCommandesByProduit(idProduit);
+            return ResponseEntity.ok(commandes);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
