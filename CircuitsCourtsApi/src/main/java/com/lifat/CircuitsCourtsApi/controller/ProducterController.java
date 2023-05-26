@@ -4,6 +4,7 @@ import com.lifat.CircuitsCourtsApi.model.Producteur;
 import com.lifat.CircuitsCourtsApi.model.Produit;
 import com.lifat.CircuitsCourtsApi.model.ProduitProducteurId;
 import com.lifat.CircuitsCourtsApi.model.ProduitsProducteurs;
+import com.lifat.CircuitsCourtsApi.payload.response.ProducteursProduitResponse;
 import com.lifat.CircuitsCourtsApi.service.ProducteurServices;
 import com.lifat.CircuitsCourtsApi.service.ProduitProducteurService;
 import com.lifat.CircuitsCourtsApi.service.ProduitService;
@@ -12,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
@@ -74,11 +73,36 @@ public class ProducterController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/producteurs/produit/{idProduit}")
     public ResponseEntity<?> getProdByProduits(@PathVariable Long idProduit) {
-        Optional<Produit> existingProduit = produitService.getProduit(idProduit);
-        if (existingProduit.isEmpty()) {
-            return ResponseEntity.badRequest().body("le produit n°" + idProduit + " n'existe pas");
+        Produit existingProduit = produitService.getProduit(idProduit).isPresent() ? produitService.getProduit(idProduit).get() : null;
+
+        if (existingProduit == null) {
+            return ResponseEntity.badRequest().body("le produit n°" + idProduit + " n'existe pas.");
         }
-        return ResponseEntity.ok().body(producteurServices.getAllProducteurdByProduits(idProduit));
+
+        Collection<Producteur> producteurs = producteurServices.getAllProducteurdByProduits(idProduit);
+
+        ArrayList<ProducteursProduitResponse> producteursProduitResponses = new ArrayList<>();
+
+        producteurs.forEach(producteur -> {
+            ProduitProducteurId id = new ProduitProducteurId(existingProduit.getId(), producteur.getId_Producteur());
+            ProduitsProducteurs produitsProducteurs = produitProducteurService.getById(id).get();
+            ProducteursProduitResponse producteursProduitResponse = new ProducteursProduitResponse();
+
+            producteursProduitResponse.setId(producteur.getId_Producteur());
+            producteursProduitResponse.setNom(producteur.getLibelle());
+            producteursProduitResponse.setDescription(producteur.getDescription());
+            producteursProduitResponse.setTags(producteur.getTags());
+            producteursProduitResponse.setAdresse(producteur.getAdresse());
+            producteursProduitResponse.setMail(producteur.getMail());
+            producteursProduitResponse.setRayonLivraison(producteur.getRayon_Livraison());
+            producteursProduitResponse.setIdProduit(existingProduit.getId());
+            producteursProduitResponse.setLibelle(existingProduit.getLibelle());
+            producteursProduitResponse.setQuantite(produitsProducteurs.getQuantite());
+
+            producteursProduitResponses.add(producteursProduitResponse);
+        });
+
+        return ResponseEntity.ok().body(producteursProduitResponses);
     }
 
 
