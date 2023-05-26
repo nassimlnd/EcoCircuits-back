@@ -3,12 +3,15 @@ package com.lifat.CircuitsCourtsApi.repository;
 import com.lifat.CircuitsCourtsApi.model.Commande;
 import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
 import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.transaction.Transactional;
 
 @Repository
 public interface CommandeProducteurRepository extends CrudRepository<CommandeProducteur, Long> {
@@ -26,10 +29,14 @@ public interface CommandeProducteurRepository extends CrudRepository<CommandePro
             " INNER JOIN commandes c ON cd.id_commande = c.id WHERE c.id = :idCommande", nativeQuery = true)
     Iterable<CommandeProducteur> findCommandeProdByIdCommande(@Param("idCommande")Long idCommande);
 
-    @Query(value = "SELECT cp.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id WHERE cd.id = :idCommandeDetail", nativeQuery = true)
+    @Query(value = "SELECT cp.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cd.id = :idCommandeDetail", nativeQuery = true)
     Iterable<CommandeProducteur> findCommandeProdByCommandeDetail(@Param("idCommandeDetail") Long idCommandeDetail);
 
     @Query(value = "SELECT cd.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cp.id = :idCommandeProd " ,nativeQuery = true)
     CommandeDetail findCommandeDetailByCommandeProdId(@Param("idCommandeProd")Long idCommandeProd);
 
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE produits_producteurs SET quantite = quantite + :quantite WHERE id_producteur = :idProducteur AND id_produit = :idProduit", nativeQuery = true)
+    void reatributStockToProducteur(@Param("idProducteur") Long idProducteur, @Param("idProduit") Long idProduit, @Param("quantite") Float quantite);
 }

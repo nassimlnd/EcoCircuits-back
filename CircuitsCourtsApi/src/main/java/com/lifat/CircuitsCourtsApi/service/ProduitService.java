@@ -42,6 +42,15 @@ public class ProduitService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    /**
+     * si le produit est mofifie avec un @PatchMapping, applique le patch au produit
+     * @param patch
+     * @param targetProduit
+     * @return le produit patche
+     * @throws JsonPatchException
+     * @throws JsonProcessingException
+     */
     public Produit applyPatchToProduit(JsonPatch patch, Optional<Produit> targetProduit) throws JsonPatchException, JsonProcessingException {
         JsonNode patched = patch.apply(objectMapper.convertValue(targetProduit, JsonNode.class));
         return objectMapper.treeToValue(patched, Produit.class);

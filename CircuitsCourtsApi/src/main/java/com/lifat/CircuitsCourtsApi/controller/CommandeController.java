@@ -31,9 +31,6 @@ public class CommandeController {
     private CommandeProducteurService commandeProducteurService;
 
     @Autowired
-    private CommandeInfoService commandeInfoService;
-
-    @Autowired
     private ProducteurServices producteurServices;
 
     //Commandes
@@ -218,29 +215,46 @@ public class CommandeController {
     }
 
     /**
-     * mise a jour totale de la commande spécifiée
+     * mise a jour totale de la commande, met le stock a jour
      *
      * @param id de la commande
      * @return la nouvelle commande
      */
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
     @PutMapping("/commande/update/{id}")
-    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody CommandeInfo commandeInfo){
-       return ResponseEntity.badRequest().body("pas encore fait");
+    public ResponseEntity<?> udateCommande(@PathVariable Long id, @RequestBody CommandeInfo commandeInfo) {
+        try {
+            //si la verification de l'update de la commande info est valide on enregistre tout dans la bd
+            //la save d'un objet déja existant dans la bd == update.
+            if (commandeService.verifCommandeInfoUpdate(commandeInfo)) {
+                commandeService.saveCommande(commandeInfo.getCommande());
+
+                for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
+                    commandeDetailService.saveCommandeDetail(cd);
+                }
+                for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
+                    commandeProducteurService.saveCommandeProducteur(cp);
+                }
+            }
+            return ResponseEntity.ok().body(commandeInfo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e);
+        }
     }
 
 
     /**
      * enregistre une nouvelle commande
      * met a jour le stock des producteur, leur enleve la quantite du produit demandé.
+     *
      * @param commandeInfo : la commandeInfo à verifier et enregistrer dans la bd.
      * @return la nouvelle commande
      */
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
     @PostMapping("/commande/save")
-    public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) throws Exception   {
-        //try {
-            if(commandeService.verifCommandeInfo(commandeInfo)){
+    public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) throws Exception {
+        try {
+            if (commandeService.verifCommandeInfo(commandeInfo)) {
                 commandeService.saveCommande(commandeInfo.getCommande());
                 //enregistrement des commande details
                 for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
@@ -251,16 +265,40 @@ public class CommandeController {
                     commandeProducteurService.saveCommandeProducteur(cp);
                     //on recupere le produit de la commandeDetail de cette commandeProducteur pour obtenir la quantité demandé de ce produit puis metre a jour le stock automatiquement
                     producteurServices.updateQteProduit(cp.getIdProducteur(), commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails()).get().getIdProduit(), cp.getQuantite());
-
                 }
-                return ResponseEntity.ok().body(commandeInfo);
-                //ne sera jamais executé de tt facon.
-            }else return ResponseEntity.badRequest().body("erreur lors de la verification");
+            }
+            return ResponseEntity.ok().body(commandeInfo);
 
-        //} catch (Exception e) {
-          // return ResponseEntity.badRequest().body(e.getMessage());
-        //}
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    /**
+     * Supprime par le biais d'une commande :  - la commande
+     *                                         - les commandes details associées
+     *                                         - les commandes producteurs associées aux commandes details
+     * Met a jour le stock
+     *
+     * @param id id de la commande a supprimer
+     * @return 204 si la ressource o ete supprime
+     * @throws Exception si la commande n'existe pas dans la bd.
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
+    @DeleteMapping("/commandesInfo/delete/{id}")
+    public ResponseEntity<?> deletCommandeInfo(@PathVariable Long id){
+        try{
+            CommandeInfo deletCommande = commandeService.getCommandeInfo(id);
+            commandeService.deletCommandeInfo(deletCommande.getCommande().getId());
+            return ResponseEntity.noContent().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        }
+    }
+
+
 }
 
 
