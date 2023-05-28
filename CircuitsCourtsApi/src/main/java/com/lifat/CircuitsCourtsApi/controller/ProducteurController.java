@@ -1,13 +1,12 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
-import com.lifat.CircuitsCourtsApi.model.Producteur;
-import com.lifat.CircuitsCourtsApi.model.Produit;
-import com.lifat.CircuitsCourtsApi.model.ProduitProducteurId;
-import com.lifat.CircuitsCourtsApi.model.ProduitsProducteurs;
+import com.lifat.CircuitsCourtsApi.model.*;
 import com.lifat.CircuitsCourtsApi.payload.response.ProducteursProduitResponse;
+import com.lifat.CircuitsCourtsApi.service.CommandeService;
 import com.lifat.CircuitsCourtsApi.service.ProducteurServices;
 import com.lifat.CircuitsCourtsApi.service.ProduitProducteurService;
 import com.lifat.CircuitsCourtsApi.service.ProduitService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,13 +17,16 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
 @RestController
-public class ProducterController {
+public class ProducteurController {
 
     @Autowired
     private ProducteurServices producteurServices;
 
     @Autowired
     private ProduitService produitService;
+
+    @Autowired
+    private CommandeService commandeService;
 
     @Autowired
     private ProduitProducteurService produitProducteurService;
@@ -132,6 +134,25 @@ public class ProducterController {
             return ResponseEntity.ok().body(pp.get().getQuantite());
         }
         return ResponseEntity.badRequest().build();
+    }
+
+
+    /**
+     * Renvoi tous les producteurs qui ont cette commande
+     *
+     * @param id la commande
+     * @return la liste des producteurs
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
+    @GetMapping("/producteurs/commande/{id}")
+    public ResponseEntity<?> getProdByCommande(@PathVariable Long id) {
+        Commande existingCommande = commandeService.getCommande(id).isPresent() ? commandeService.getCommande(id).get() : null;
+        if (existingCommande == null) {
+            return ResponseEntity.badRequest().body("la commande n°" + id + " n'existe pas.");
+        }
+
+        Iterable<Producteur> producteurs = producteurServices.getProducteursByCommande(existingCommande.getId());
+        return ResponseEntity.ok().body(producteurs);
     }
 
 }

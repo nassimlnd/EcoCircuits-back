@@ -3,10 +3,10 @@ package com.lifat.CircuitsCourtsApi.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.lifat.CircuitsCourtsApi.model.Commande;
-import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
-import com.lifat.CircuitsCourtsApi.model.CommandeInfo;
-import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
+import com.lifat.CircuitsCourtsApi.model.*;
+import com.lifat.CircuitsCourtsApi.payload.response.OrderDetailsResponse;
+import com.lifat.CircuitsCourtsApi.payload.response.OrderProductDetailsResponse;
+import com.lifat.CircuitsCourtsApi.payload.response.OrderProductProducerResponse;
 import com.lifat.CircuitsCourtsApi.service.*;
 import com.sun.source.tree.TryTree;
 import org.checkerframework.checker.units.qual.A;
@@ -32,6 +32,9 @@ public class CommandeController {
 
     @Autowired
     private ProducteurServices producteurServices;
+
+    @Autowired
+    private ProduitService produitService;
 
     //Commandes
     @GetMapping("/commandes")
@@ -200,7 +203,7 @@ public class CommandeController {
      *
      * @return collection de commandeInfo
      */
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIASTEUR')")
+    /*@PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIASTEUR')")
     @GetMapping("/commandesInfo")
     public ResponseEntity<Collection<CommandeInfo>> getCommandesInfo() {
         Collection<CommandeInfo> commandeInfos = new ArrayList<>();
@@ -212,7 +215,46 @@ public class CommandeController {
             commandeInfos.add(oneCommandeInfo);
         }
         return ResponseEntity.ok(commandeInfos);
+    }*/
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
+    @GetMapping("/commandes/info/{id}")
+    public ResponseEntity<?> getOrderInfoById(@PathVariable Long id) {
+        if (!commandeService.getCommande(id).isPresent()) {
+            return ResponseEntity.badRequest().body("la commande n°" + id + " n'existe pas");
+        }
+
+        Commande commande = commandeService.getCommande(id).get();
+        Iterable<Produit> produits = produitService.getProductsByOrder(id);
+        Iterable<CommandeDetail> commandeDetails = commandeDetailService.getCommandeDetailByCommandeId(id);
+
+        ArrayList<OrderProductDetailsResponse> orderProductResponses = new ArrayList<>();
+
+
+
+        for (CommandeDetail commandeDetail : commandeDetails) {
+            ArrayList<OrderProductProducerResponse> orderProductProducerResponses = new ArrayList<>();
+            if (!produitService.getProduit(commandeDetail.getIdProduit()).isPresent()) {
+                return ResponseEntity.badRequest().body("le produit n°" + commandeDetail.getIdProduit() + " n'existe pas");
+            }
+            Produit produit = produitService.getProduit(commandeDetail.getIdProduit()).get();
+            Iterable<CommandeProducteur> commandeProducteurs = commandeProducteurService.getCommandesProducteurByCommandeDetail(commandeDetail.getId());
+            for (CommandeProducteur cp : commandeProducteurs) {
+                Optional<Producteur> producteur = producteurServices.getProducteurById(cp.getIdProducteur());
+                if (produit != null && producteur.isPresent()) {
+                    Producteur producteur1 = producteur.get();
+                    orderProductProducerResponses.add(new OrderProductProducerResponse(producteur1.getId_Producteur(), producteur1.getDescription(), producteur1.getTags(), producteur1.getLibelle(), producteur1.getAdresse(), producteur1.getMail(), producteur1.getRayon_Livraison(), cp.getQuantite()));
+                }
+            }
+
+            orderProductResponses.add(new OrderProductDetailsResponse(produit.getId(), produit.getLibelle(), produit.getTva(), produit.getReference(), produit.getOrigineProduction(), produit.getOrigineTransformation(), produit.getAgriculture(), produit.getTypeProduit(), produit.getConditionnement(), produit.getDluo(), produit.getPrix(), commandeDetail.getQuantite(), orderProductProducerResponses));
+        }
+
+        OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse(commande.getId(), commande.getIdClient(), commande.getDateCommande(), orderProductResponses);
+
+
+        return ResponseEntity.ok(orderDetailsResponse);
     }
+
 
     /**
      * mise a jour totale de la commande, met le stock a jour

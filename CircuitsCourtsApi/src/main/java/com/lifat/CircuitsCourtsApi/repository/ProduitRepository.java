@@ -23,7 +23,10 @@ public interface ProduitRepository extends CrudRepository<Produit, Long> {
             " WHERE pp.id_producteur = :idProd AND p.id = :idProduit", nativeQuery = true)
     Optional<Produit> findProduitByIdProduitAndProducteur(@Param("idProd")Long idProd, @Param("idProduit")Long idProduit);
 
-    @Query(value = "SELECT quantite FORM produits_producteurs pp WHERE pp.id_producteur = :idProd AND pp.id_produit =:idProduit", nativeQuery = true)
+    @Query(value = "SELECT quantite FROM produits_producteurs pp WHERE pp.id_producteur = :idProd AND pp.id_produit =:idProduit", nativeQuery = true)
     float fintQteByProduitAndProducteurs(@Param("idProd") Long idProducteur, @Param("idProduit") Long idProduit);
+
+    @Query(value = "SELECT * FROM produits p INNER JOIN commande_details cd ON p.id=cd.id_produit WHERE cd.id_commande = :idCommande", nativeQuery = true)
+    Iterable<Produit> findProductsByOrder(Long idCommande);
 
 }

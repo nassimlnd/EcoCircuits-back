@@ -38,4 +38,7 @@ public interface ProducteurRepository extends CrudRepository<Producteur, Long> {
 
     @Query(value = "SELECT quantite FROM produits_producteurs WHERE id_producteur = :idProd AND id_produit = :idProduit", nativeQuery = true)
     Optional<Float> getQteProduit(@Param("idProd")Long idProd, @Param("idProduit")Long idProduit);
+
+    @Query(value = "SELECT * FROM producteurs p INNER JOIN commande_producteur cp ON p.id_producteur = cp.id_producteur INNER JOIN commande_details cd ON cp.id_commande_details = cd.id INNER JOIN commandes c ON cd.id_commande = c.id WHERE c.id = :idCommande", nativeQuery = true)
+    Iterable<Producteur> getProducteurByOrder(Long idCommande);
 }

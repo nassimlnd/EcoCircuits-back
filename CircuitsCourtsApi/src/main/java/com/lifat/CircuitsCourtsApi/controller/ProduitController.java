@@ -85,7 +85,7 @@ public class ProduitController {
 
 
     /**
-     * udate un produit avec in patch(update partielle)
+     * update un produit avec in patch(update partielle)
      * @param id id du produit
      * @param  patch a appliquer
      * @return renvoi le produit patché
@@ -104,6 +104,19 @@ public class ProduitController {
         produitService.saveProduit(updateProduit);
         return ResponseEntity.ok().body(updateProduit);
     }
+
+
+    /**
+     * Récupère tous les produits d'une commande et leur quantité
+     * @param id id de la commande
+     * @return les produits de la commande
+     */
+    /*@PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole ('PRODUCTEUR')")
+    @GetMapping("/produits/commande/{id}")
+    public ResponseEntity<?> getProduitsByCommande(@PathVariable Long id){
+        Collection<Produit> produits =  produitService.getProduitsByCommande(id);
+        return ResponseEntity.ok().body(produits);
+    }*/
 
 
 }

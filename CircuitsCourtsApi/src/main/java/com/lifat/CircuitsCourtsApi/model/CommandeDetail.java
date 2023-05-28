@@ -28,6 +28,6 @@ public class CommandeDetail {
 
     @Min(0)
     @Column(name = "quantite")
-    private Double quantite;
+    private Float quantite;
 
 }

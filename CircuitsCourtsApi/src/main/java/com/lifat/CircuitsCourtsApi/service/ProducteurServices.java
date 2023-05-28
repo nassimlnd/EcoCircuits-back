@@ -41,4 +41,8 @@ public class ProducteurServices {
     public void updateQteProduit(Long idProd, Long idProduit, Float qte){
         producteurRepository.updateQteProduit(idProd, idProduit, qte);
     }
+
+    public Iterable<Producteur> getProducteursByCommande(Long idCommande){
+        return producteurRepository.getProducteurByOrder(idCommande);
+    }
 }

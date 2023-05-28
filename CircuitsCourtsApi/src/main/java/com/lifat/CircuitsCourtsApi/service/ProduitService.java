@@ -59,4 +59,8 @@ public class ProduitService {
     public void save(Produit updatedProduit) {
         produitRepository.save(updatedProduit);
     }
+
+    public Iterable<Produit> getProductsByOrder(Long id) {
+        return produitRepository.findProductsByOrder(id);
+    }
 }

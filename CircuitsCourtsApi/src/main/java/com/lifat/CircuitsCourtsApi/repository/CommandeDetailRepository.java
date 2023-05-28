@@ -11,7 +11,7 @@ import java.util.Collection;
 @Repository
 public interface CommandeDetailRepository extends CrudRepository<CommandeDetail, Long> {
 
-    CommandeDetail findByIdCommande(Long commandeId);
+    Iterable<CommandeDetail> findByIdCommande(Long commandeId);
 
     Iterable<CommandeDetail> findAllByIdCommande(Long commandeId);
 
