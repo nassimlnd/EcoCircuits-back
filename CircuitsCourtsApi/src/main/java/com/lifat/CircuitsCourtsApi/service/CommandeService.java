@@ -7,6 +7,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.*;
 import com.lifat.CircuitsCourtsApi.repository.*;
+import org.apache.tomcat.util.digester.ObjectCreateRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.web.servlet.oauth2.resourceserver.OpaqueTokenDsl;
 import org.springframework.stereotype.Service;
@@ -87,21 +88,15 @@ public class CommandeService {
      * @return treu si et seulement si  aucunes verificatipns de la commandeInfo n'ont levees aucunes une exception
      */
     public boolean verifCommandeInfo(CommandeInfo commandeInfo) throws Exception {
-        //on verifie que la commande n'existe pas deja
 
-        commandeExist(commandeInfo.getCommande().getId());
         //verification de l'existence du client
         Commande newCommande = commandeInfo.getCommande();
-        //System.out.println(commandeInfo.getCommande().toString());
-        //System.out.println("===================" + newCommande.getIdClient());
-        //System.out.println("===================" + clientRepository.findById(newCommande.getIdClient()));
         if (doesClientExist(newCommande.getIdClient())) {
             //verification de l'existence des produits
 
             HashMap<CommandeDetail, ArrayList<CommandeProducteur>> hashVerif = getCommandesProducteurByCommandeDetail(commandeInfo);
             for (Map.Entry mapEntry : hashVerif.entrySet()) {
                 CommandeDetail cd = (CommandeDetail) mapEntry.getKey();
-                //System.out.println(cd.toString());
                 doesCommandeDetailExist(cd.getId());
                 doesProduitExist(cd.getIdProduit());
                 cd.setIdCommande(newCommande.getId());
@@ -278,14 +273,14 @@ public class CommandeService {
      */
     public boolean doesPorducteurHaveEnough(Long idproducteur, Long idProduit, Float quantite) throws Exception {
         //System.out.println(produitRepository.findProduitsByProducteur(idproducteur).toString());
-        if (!produitRepository.findProduitsByProducteur(idproducteur).isEmpty()) {
+        if (produitRepository.findProduitsByProducteur(idproducteur).contains(produitRepository.findById(idProduit).get())) {
             Optional<Float> optionalQte = producteurRepository.getQteProduit(idproducteur, idProduit);
             if (optionalQte.isPresent() && optionalQte.get() >= quantite) {
                 return true;
-            } else
-                throw new Exception("le producteur n°" + idproducteur + " n'a pas le produit n°" + idProduit + " en quantite suffiante");
-        } else
-            throw new Exception("Le producteur n°" + idproducteur + " : " + producteurRepository.findById(idproducteur).get().getLibelle() + " ne possede pas le produit n°" + idProduit + " : " + produitRepository.findById(idProduit).get().getLibelle());
+            }
+            throw new Exception("le producteur n°" + idproducteur + " n'a pas le produit n°" + idProduit + " en quantite suffiante");
+        }
+        throw new Exception("Le producteur n°" + idproducteur + " : " + producteurRepository.findById(idproducteur).get().getLibelle() + " ne possede pas le produit n°" + idProduit + " : " + produitRepository.findById(idProduit).get().getLibelle());
     }
 
     @Autowired
@@ -324,26 +319,21 @@ public class CommandeService {
     //TODO =============================== A FINIR ================================
 
     /**
-     * Verifications sont utiles pour la mise a jour d'une commande
-     * On verifie : - la commande existe deja
-     * - les commandeDetails existent deja
-     * - les commandeProducteurs existent deja
-     * - le client existe deja
-     * - les producteurs existent
-     * - les producteurs possedent ce produit en quantité suffisante
-     * Dans le cas ou on rajoute des commandesProducteur/commandesDetails : verifications de créations + mise a jour automatique du stock
-     * Dans le cas ou on suprime des commandesProducteur/commandesDetails : mise a jour automatique du stock
-     *
+     * Verification et modification entre la commandeInfo de base et l'update
+     * puis appel de la methode verifCommandeInfo() pour reverifier les données dans la nouvelle commandeInfo
      * @param updateCommandeInfo l'update de la commandeInfo
-     * @return la CommandeInfo mis a jour.
+     * @return la CommandeInfo mis a jour l'originale sinon
      * @throws Exception
      */
-    public boolean verifCommandeInfoUpdate(CommandeInfo updateCommandeInfo) throws Exception {
+    public CommandeInfo verifCommandeInfoUpdate(CommandeInfo updateCommandeInfo) throws Exception {
         //on recupere la commandeInfo originale avec l'id de la commande l'updateCommandeInfo car l'id d'une commande ne change pas.
         CommandeInfo originalCommandeInfo = getCommandeInfo(updateCommandeInfo.getCommande().getId());
-        Collection<CommandeDetail> originalCommandeDetails = originalCommandeInfo.getCommandesDetails();
 
-        return false;
+        if(verifCommandeInfo(updateCommandeInfo)){
+            deletCommandeInfo(originalCommandeInfo.getCommande().getId());
+            return updateCommandeInfo;
+        }
+        return originalCommandeInfo;
     }
 
     /**

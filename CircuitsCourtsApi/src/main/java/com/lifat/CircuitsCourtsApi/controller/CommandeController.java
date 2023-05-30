@@ -230,7 +230,6 @@ public class CommandeController {
         ArrayList<OrderProductDetailsResponse> orderProductResponses = new ArrayList<>();
 
 
-
         for (CommandeDetail commandeDetail : commandeDetails) {
             ArrayList<OrderProductProducerResponse> orderProductProducerResponses = new ArrayList<>();
             if (!produitService.getProduit(commandeDetail.getIdProduit()).isPresent()) {
@@ -268,7 +267,9 @@ public class CommandeController {
         try {
             //si la verification de l'update de la commande info est valide on enregistre tout dans la bd
             //la save d'un objet déja existant dans la bd == update.
-            if (commandeService.verifCommandeInfoUpdate(commandeInfo)) {
+            CommandeInfo commandeInfo1 = commandeService.verifCommandeInfoUpdate(commandeInfo);
+            //les verifications sont passées pour l'update
+            if (commandeInfo1.equals(commandeInfo)) {
                 commandeService.saveCommande(commandeInfo.getCommande());
 
                 for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
@@ -280,7 +281,7 @@ public class CommandeController {
             }
             return ResponseEntity.ok().body(commandeInfo);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -295,25 +296,32 @@ public class CommandeController {
     @PreAuthorize("hasRole('Admin') or hasRole ('ORGANISATEUR')")
     @PostMapping("/commande/save")
     public ResponseEntity<?> saveCommande(@RequestBody CommandeInfo commandeInfo) throws Exception {
-        try {
-            if (commandeService.verifCommandeInfo(commandeInfo)) {
-                commandeService.saveCommande(commandeInfo.getCommande());
-                //enregistrement des commande details
-                for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
-                    commandeDetailService.saveCommandeDetail(cd);
-                }
-                //enregistrement des commandes producteurs/update du stock
-                for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
-                    commandeProducteurService.saveCommandeProducteur(cp);
-                    //on recupere le produit de la commandeDetail de cette commandeProducteur pour obtenir la quantité demandé de ce produit puis metre a jour le stock automatiquement
-                    producteurServices.updateQteProduit(cp.getIdProducteur(), commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails()).get().getIdProduit(), cp.getQuantite());
+        //try {
+        //on verifie que la commande n'existe pas deja
+
+        commandeService.commandeExist(commandeInfo.getCommande().getId());
+        if (commandeService.verifCommandeInfo(commandeInfo)) {
+            commandeService.saveCommande(commandeInfo.getCommande());
+            //enregistrement des commande details
+            for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
+                commandeDetailService.saveCommandeDetail(cd);
+            }
+
+            //enregistrement des commandes producteurs/update du stock
+            for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
+                commandeProducteurService.saveCommandeProducteur(cp);
+                Optional<CommandeDetail> commandeDetail = commandeDetailService.getCommandeDetail(cp.getIdCommandeDetails());
+                if (commandeDetail.isPresent()) {
+                    producteurServices.updateQteProduit(cp.getIdProducteur(), commandeDetail.get().getIdProduit(), cp.getQuantite());
                 }
             }
-            return ResponseEntity.ok().body(commandeInfo);
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         }
+        return ResponseEntity.ok().body(commandeInfo);
+
+        //} catch (Exception e) {
+        //  return ResponseEntity.badRequest().body(e.getMessage());
+        //}
     }
 
     /**
@@ -342,6 +350,7 @@ public class CommandeController {
 
     /**
      * Envoie les commandes liées à un produit d'id idProduit
+     *
      * @param idProduit id du produit
      * @return les commandes liées à un produit d'id idProduit
      */
