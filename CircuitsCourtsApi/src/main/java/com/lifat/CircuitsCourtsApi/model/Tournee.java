@@ -1,0 +1,30 @@
+package com.lifat.CircuitsCourtsApi.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.Collection;
+
+
+@Entity
+@Data
+@Table(name = "tournee")
+@AllArgsConstructor
+@NoArgsConstructor
+public class Tournee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column
+    private String Etat;
+
+    @Column
+    private Long id_producteur;
+
+    @OneToMany(mappedBy = "tournee")
+    private Collection<Commande> commandes ;
+}
