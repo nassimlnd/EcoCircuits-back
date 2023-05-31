@@ -42,6 +42,11 @@ public class Producteur {
     @Column(name = "rayon_livraison")
     private Float rayon_Livraison;
 
+    @Column(name = "latitude", scale = 6)
+    private Double longitude;
+
+    @Column(name ="longitude", scale = 6)
+    private Double latitude;
 
     @JsonIgnore
     @OneToMany(mappedBy = "produit")
