@@ -1,3 +1,37 @@
+/*
+Navicat MySQL Data Transfer
+
+Source Server         : MySqlConnection
+Source Server Version : 50505
+Source Host           : localhost:3306
+Source Database       : ecocircuits
+
+Target Server Type    : MYSQL
+Target Server Version : 50505
+File Encoding         : 65001
+
+Date: 2023-05-31 15:45:41
+*/
+
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for `producteurs`
+-- ----------------------------
+DROP TABLE IF EXISTS `producteurs`;
+CREATE TABLE `producteurs` (
+  `id_producteur` bigint(20) NOT NULL AUTO_INCREMENT,
+  `libelle` varchar(255) DEFAULT '',
+  `adresse_postale` varchar(255) DEFAULT '',
+  `description` varchar(1000) DEFAULT '',
+  `tags` varchar(255) DEFAULT '',
+  `mail` varchar(255) DEFAULT '',
+  `rayon_livraison` float DEFAULT NULL,
+  `id` bigint(20) NOT NULL,
+  `latitude` float DEFAULT NULL,
+  `longitude` float DEFAULT NULL,
+  PRIMARY KEY (`id_producteur`)
+) ENGINE=MyISAM AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of producteurs
