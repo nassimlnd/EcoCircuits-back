@@ -203,7 +203,8 @@ public class CommandeController {
      *
      * @return collection de commandeInfo
      */
-    /*@PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIASTEUR')")
+    /*
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIASTEUR')")
     @GetMapping("/commandesInfo")
     public ResponseEntity<Collection<CommandeInfo>> getCommandesInfo() {
         Collection<CommandeInfo> commandeInfos = new ArrayList<>();
@@ -250,6 +251,14 @@ public class CommandeController {
 
         OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse(commande.getId(), commande.getIdClient(), commande.getDateCommande(), orderProductResponses);
 
+
+        Commande commande1 = new Commande();
+        commande1 = commandeService.saveCommande(commande1);
+        commande1.getId();
+
+        CommandeDetail commandeDetail = new CommandeDetail();
+        commandeDetail.setIdProduit(2L);
+        commandeDetail.setIdCommande(commande1.getId());
 
         return ResponseEntity.ok(orderDetailsResponse);
     }
