@@ -1,5 +1,6 @@
 package com.lifat.CircuitsCourtsApi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class Role {
 
     private String name;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Collection<User> users;
 
@@ -43,7 +45,7 @@ public class Role {
 
 
     public Role(String name){
-        this.name = name;
+        this.role = name;
     }
 
 }

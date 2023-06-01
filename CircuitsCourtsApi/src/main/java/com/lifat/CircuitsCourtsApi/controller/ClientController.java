@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
@@ -28,12 +30,20 @@ public class ClientController {
     @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
     @GetMapping("/clients/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id)  {
-            return ResponseEntity.ok(clientService.getClient(id));
+        Optional<Client> existingClient = clientService.getClient(id);
+        if(existingClient.isEmpty()){
+            return ResponseEntity.badRequest().body("le client n°" + id + "n'existe pas");
+        }
+        return ResponseEntity.ok(clientService.getClient(id));
     }
 
     @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
     @GetMapping("/clients/{id}/commandes")
     public ResponseEntity<?> getClientCommandes(@PathVariable Long id) throws Exception {
+        Optional<Client> existingClient = clientService.getClient(id);
+        if(existingClient.isEmpty()){
+            return ResponseEntity.badRequest().body("le client n°"+ id+ "n'existe pas");
+        }
             return ResponseEntity.ok(clientService.getClientCommandes(id));
     }
 

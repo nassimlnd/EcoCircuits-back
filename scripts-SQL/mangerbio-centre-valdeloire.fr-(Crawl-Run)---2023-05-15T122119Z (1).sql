@@ -28,7 +28,7 @@ Certificat : Ecpcert
 Famille : GROUP
 Produits : Céréale
 Site internet : http://berrygraines.com');
-INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('Bio Centre Loire',NULL,'Bio Centre Loire est une coopérative de producteurs 100% Bio qui met en marché les FEL bio issus des fermes adhérentes en région Centre Val de Loire. Créé en 2016 par 7 producteurs, BCL rassemble aujourd''hui 36 fermes au profil diversifié. La gamme proposée est large (Plus de 35 familles pour plus de 100 références produits). En 2021, BCL a commercialisé 3 000 t de FEL pour un chiffre d''affaires de 4,4 millions d''euros. Nous sommes spécialisés sur l''expédition en frais (marché de demi-gros/gros). Nos producteurs ont leur siège social et leurs sites de production en région Centre VDL. Ils sont 100% bio et engagés dans la certification Bio Cohérence (pas de travailleurs détachés, pas de serres chauffées, pas de CMS, ...). Le stockage et le conditionnement ont lieu sur les fermes. Notre leitmotiv : Développer une agriculture biologique exigeante en région Centre Val de Loire en construisant des filières durables, équitables et rémunératrices pour les producteurs.','Agriculture biologique
+INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('Bio Centre Loire',"28 Rte de Saint-Aignan, 41700 Le Controis-en-Sologne",'Bio Centre Loire est une coopérative de producteurs 100% Bio qui met en marché les FEL bio issus des fermes adhérentes en région Centre Val de Loire. Créé en 2016 par 7 producteurs, BCL rassemble aujourd''hui 36 fermes au profil diversifié. La gamme proposée est large (Plus de 35 familles pour plus de 100 références produits). En 2021, BCL a commercialisé 3 000 t de FEL pour un chiffre d''affaires de 4,4 millions d''euros. Nous sommes spécialisés sur l''expédition en frais (marché de demi-gros/gros). Nos producteurs ont leur siège social et leurs sites de production en région Centre VDL. Ils sont 100% bio et engagés dans la certification Bio Cohérence (pas de travailleurs détachés, pas de serres chauffées, pas de CMS, ...). Le stockage et le conditionnement ont lieu sur les fermes. Notre leitmotiv : Développer une agriculture biologique exigeante en région Centre Val de Loire en construisant des filières durables, équitables et rémunératrices pour les producteurs.','Agriculture biologique
 Certificat : Bio
 Famille : GROUP
 Produits : Fruit, Légume');
@@ -52,7 +52,7 @@ INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL 
 INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL Les Epis d''Or','6 Rue des Epis d’Or, 28800 Neuvy-en-Dunois',NULL,NULL);
 INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL Nouvellon Agri Bio','6 Chemin de Cour-sur-loire, 41500 Mulsans',NULL,NULL);
 INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL Philippe JUMEAU','2 rue Albert CAMUNEAU, 28200 Thiville',NULL,NULL);
-INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL Pontijou',NULL,NULL,NULL);
+INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL Pontijou',"3 Rue des Vouzoirs, 41500 Maves",NULL,NULL);
 INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL S;Guerin','Occonville 17 rue du lion, 28700 Le Gué de Longroi',NULL,NULL);
 INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL Serres Bio Val','257 Rue des Serres, 45590 Saint-Cyr-en-Val',NULL,NULL);
 INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('EARL Vazelle','Vazelle, 41130 Billy',NULL,NULL);
@@ -102,7 +102,7 @@ Site internet : http://fermebiosaintemarie.e-monsite.com/');
 INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('GAEC de la Georgerie','301 chemin de la georgerie, 37360 Rouziers-de-Touraine','La Ferme de la Georgerie est composée d''Audrey et Cyrille associés co-gérants et d''un salarié à temps partiel.
  Nous cultivons des céréales en agriculture biologique sur 120 hectares et transformons nos céréales en farines et pâtes sur la ferme. Nous approvisionnons boulangeries, épiceries et particuliers.','Agriculture en conversion biologique
 Produits : Céréale');
-INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('GAEC du Chat Blanc',NULL,NULL,'Agriculture biologique
+INSERT INTO producteurs(libelle,adresse_postale,description,tags) VALUES ('GAEC du Chat Blanc',"3 rue de champ boulain, 41500 Maves",NULL,'Agriculture biologique
 Certificat : FR-BIO-10
 Vente à la ferme
 Produits : Céréale

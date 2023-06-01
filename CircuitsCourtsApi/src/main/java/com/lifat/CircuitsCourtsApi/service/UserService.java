@@ -1,15 +1,25 @@
 package com.lifat.CircuitsCourtsApi.service;
 
+import com.lifat.CircuitsCourtsApi.model.Role;
+import com.lifat.CircuitsCourtsApi.payload.response.RoleResponse;
+import com.lifat.CircuitsCourtsApi.payload.response.UserResponse;
+import com.lifat.CircuitsCourtsApi.repository.RoleRepository;
 import com.lifat.CircuitsCourtsApi.repository.UserRepository;
 import com.lifat.CircuitsCourtsApi.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     /*public User findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -31,7 +41,31 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public User findByToken(String token){
-        return userRepository.findByToken(token);
+    /*public ResponseEntity<?> getRolesById(Long id) {
+        ArrayList<UserResponse> userResponses = new ArrayList<>();
+
+        for (Integer roleId : userRepository.findRolesById(id)) {
+            Role role = roleRepository.findById(Long.valueOf(roleId)).get();
+            userResponses.add(new UserResponse(role.getId(), role.getRole()));
+        }
+
+        return ResponseEntity.ok(userResponses);
+    }*/
+
+    public ResponseEntity<?> getAllUsersWithRole() {
+        ArrayList<UserResponse> userResponses = new ArrayList<>();
+
+        for (User user : userRepository.findAll()) {
+            ArrayList<RoleResponse> roles = new ArrayList<>();
+            for (Integer roleId : userRepository.findRolesById(user.getId())) {
+                Role role = roleRepository.findById(Long.valueOf(roleId)).get();
+                RoleResponse roleResponse = new RoleResponse(role.getId(), role.getRole());
+                roles.add(roleResponse);
+            }
+            userResponses.add(new UserResponse(user.getId(), user.getUsername(), user.getEmail(), roles));
+        }
+
+        return ResponseEntity.ok(userResponses);
     }
+
 }

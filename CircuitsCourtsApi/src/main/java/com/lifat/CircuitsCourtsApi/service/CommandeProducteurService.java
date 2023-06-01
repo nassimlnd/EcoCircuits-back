@@ -40,11 +40,28 @@ public class CommandeProducteurService {
         commandeProducteurRepository.deleteById(id);
     }
 
-    public CommandeProducteur getCommandeProducteurByCommandeDetail(Long commandeDetailId){
+    public CommandeProducteur getCommandeProducteurByCommandeDetail(Long commandeDetailId) {
         return commandeProducteurRepository.findByidCommandeDetails(commandeDetailId);
     }
 
-   public Iterable<CommandeProducteur> getCommandesProducteurByIdProducteur(Long idProd){
+    public Iterable<CommandeProducteur> getCommandesProducteurByIdProducteur(Long idProd) {
         return commandeProducteurRepository.findByIdProducteur(idProd);
-   }
+    }
+
+    public Iterable<CommandeProducteur> findByIdProducteur(Long idProducteur) {
+        return commandeProducteurRepository.findByIdProducteur(idProducteur);
+    }
+
+    public CommandeProducteur getCommandeProdByCommandeDetailAndProducteur(Long idCommandeDetail, Long idProd) {
+        return commandeProducteurRepository.findCommandeProdByCommandeDetailAndProducteur(idProd, idCommandeDetail);
+    }
+
+    public Iterable<CommandeProducteur> findAllByIdCommande(Long idCommande) {
+        return commandeProducteurRepository.findCommandeProdByIdCommande(idCommande);
+    }
+
+
+    public Iterable<CommandeProducteur> getCommandesProducteurByCommandeDetail(Long idCommandeDetail){
+        return commandeProducteurRepository.findCommandeProdByCommandeDetail(idCommandeDetail);
+    }
 }

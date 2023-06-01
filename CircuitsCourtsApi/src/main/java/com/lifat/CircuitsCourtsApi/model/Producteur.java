@@ -4,7 +4,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public class Producteur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_Producteur;
 
-
+    @Pattern(regexp = "^[a-zA-Z0-9\\s\\p{Punct}]+$")
     @Column(name = "description")
     private String description;
 
@@ -40,4 +42,13 @@ public class Producteur {
     @Column(name = "rayon_livraison")
     private Float rayon_Livraison;
 
+    @Column(name = "latitude", scale = 6)
+    private Double latitude;
+
+    @Column(name ="longitude", scale = 6)
+    private Double longitude;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "produit")
+    private Set<ProduitsProducteurs> lesProduits;
 }
