@@ -124,7 +124,6 @@ public class CommandeService {
         return true;
     }
 
-
     /**
      * verifie que la commande n'existe pas dans la base de données
      *
@@ -345,14 +344,61 @@ public class CommandeService {
         //on recupere la commandeInfo originale avec l'id de la commande l'updateCommandeInfo car l'id d'une commande ne change pas.
         CommandeInfo originalCommandeInfo = getCommandeInfo(updateCommandeInfo.getCommande().getId());
 
-        if(verifCommandeInfo(updateCommandeInfo)){
-            Long commandeId = originalCommandeInfo.getCommande().getId();
-            deletCommandeInfo(originalCommandeInfo.getCommande().getId());
-            originalCommandeInfo.getCommande().setId(commandeId);
-            return updateCommandeInfo;
+        if(isValidNewCommandeInfo(updateCommandeInfo)){
+            //suppression des commandes details en trop
+            for (CommandeDetail cd : originalCommandeInfo.getCommandesDetails()) {
+                if(updateCommandeInfo.getCommandesDetails().contains(cd)){
+                } else {
+                    commandeDetailRepository.delete(cd);
+                }
+            }
+
+            for (CommandeProducteur cp: originalCommandeInfo.getCommandesProducteur()) {
+                if(updateCommandeInfo.getCommandesProducteur().contains(cp)){
+                }else {
+                    Optional<CommandeDetail> temp =  commandeDetailRepository.findById(cp.getIdCommandeDetails());
+                    System.out.println("========================"+temp.get().getIdProduit() + " " + cp.getIdProducteur() +" "+ cp.getQuantite());
+                    commandeProducteurRepository.reatributStockToProducteur(cp.getIdProducteur(), temp.get().getIdProduit() ,cp.getQuantite());
+                    commandeProducteurRepository.delete(cp);
+                }
+            }
+
         }
         return originalCommandeInfo;
     }
+
+    public boolean isValidNewCommandeInfo(CommandeInfo commandeInfo) throws Exception {
+
+        //verification de l'existence du client
+        Commande newCommande = commandeInfo.getCommande();
+        if (doesClientExist(newCommande.getIdClient())) {
+            //verification de l'existence des produits
+
+            HashMap<CommandeDetail, ArrayList<CommandeProducteur>> hashVerif = getCommandesProducteurByCommandeDetail(commandeInfo);
+            for (Map.Entry mapEntry : hashVerif.entrySet()) {
+                CommandeDetail cd = (CommandeDetail) mapEntry.getKey();
+                doesProduitExist(cd.getIdProduit());
+                cd.setIdCommande(newCommande.getId());
+
+                //verifications pour les commandes prod associées à cette commande detail.
+                //verification de l'existence de chaque producteurs affectés à la commande et si leurs stock >= quantite commandeProd
+                ArrayList<CommandeProducteur> commandesProd = (ArrayList<CommandeProducteur>) mapEntry.getValue();
+                for (CommandeProducteur cp : commandesProd) {
+                    doesProducteurExist(cp.getIdProducteur());
+                    Optional<Producteur> producteur = producteurRepository.findById(cp.getIdProducteur());
+                    Optional<Client> client = clientRepository.findById(commandeInfo.getCommande().getIdClient());
+                    if(doesProducteurCanDelivery(producteur.get(), client.get())){
+                        if (doesPorducteurHaveEnough(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite())) {
+                            producteurRepository.updateQteProduit(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite());
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
 
     /**
      * Supprime toute la commadeInfo
@@ -370,24 +416,49 @@ public class CommandeService {
             //si une commande producteur est dans la base de donnée alors elle est forcement liee a une commande detail.
             //on a besoin de la commande detail en question pour recuperer le produit
             Optional<CommandeDetail> cd = commandeDetailRepository.findById(cp.getIdCommandeDetails());
+            System.out.println("========================"+cd.get().getIdProduit());
             commandeProducteurRepository.reatributStockToProducteur(cp.getIdProducteur(),cd.get().getIdProduit() ,cp.getQuantite());
-            commandeProducteurRepository.delete(cp);
+
         }
 
         //on supprime les commandes details
         for (CommandeDetail cd : commandeInfoToDelete.getCommandesDetails()) {
-            commandeDetailRepository.delete(cd);
+            commandeDetailService.deletCommandeDetail(cd);
         }
         //on supprime la commande
         commandeRepository.delete(commandeInfoToDelete.getCommande());
     }
 
-    //TODO : delete pour l'update
     /**
      * supprime la commandeInfo sans supprimer la commande
      * Utile dans le cas de l'update de la commandeInfo car
-     * dans l'update tout est supprimé pour etre remplacé mais si la commande n'existe plus le save va auto incrementer l'objet au lieu de juste faire une update
+     * dans l'update tout est supprimé pour etre remplacé mais si la commande n'existe plus le save va auto incrementer l'objet au lieu de juste faire une update.
+     * @param commandeInfo la commandeInfo à supprimer
+     * @return la commande de la commandeInfo
+     * @throws Exception
      */
+    public Commande deleteCommandeInfoFOrUpdate(CommandeInfo commandeInfo) throws Exception {
+       CommandeInfo toDelet = getCommandeInfo(commandeInfo.getCommande().getId());
+       Commande toSave = toDelet.getCommande();
+
+        //on reatribut le stock au producteur puis on supprime la commande producteur
+        for (CommandeProducteur cp : toDelet.getCommandesProducteur()) {
+            //si une commande producteur est dans la base de donnée alors elle est forcement liee a une commande detail.
+            //on a besoin de la commande detail en question pour recuperer le produit
+            Optional<CommandeDetail> cd = commandeDetailRepository.findById(cp.getIdCommandeDetails());
+            System.out.println("========================"+cd.get().getIdProduit());
+            commandeProducteurRepository.reatributStockToProducteur(cp.getIdProducteur(),cd.get().getIdProduit() ,cp.getQuantite());
+            commandeProducteurRepository.delete(cp);
+        }
+
+        //on supprime les commandes details et ses commandes prod.
+        for (CommandeDetail cd : toDelet.getCommandesDetails()) {
+            commandeDetailService.deletCommandeDetail(cd);
+        }
+
+        return toSave;
+
+    }
 
     /**
      * retrouve la commande info dans sa totalité à partir de l'id d'une commande

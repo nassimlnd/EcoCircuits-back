@@ -1,10 +1,13 @@
 package com.lifat.CircuitsCourtsApi.service;
 
 import com.lifat.CircuitsCourtsApi.model.CommandeDetail;
+import com.lifat.CircuitsCourtsApi.model.CommandeProducteur;
 import com.lifat.CircuitsCourtsApi.repository.CommandeDetailRepository;
+import com.lifat.CircuitsCourtsApi.repository.CommandeProducteurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -44,5 +47,19 @@ public class CommandeDetailService {
 
     public Iterable<CommandeDetail> findAllByCommandeAndProducteur(Long idProd, Long idCommande){
         return commandeDetailRepository.findCommandeDetailsByCommandesAndProducteur(idProd, idCommande);
+    }
+
+
+    @Autowired
+    private CommandeProducteurRepository commandeProducteurRepository;
+
+    /**
+     * supprime une commande detail avec toutes ses commandes prod.
+     * @param commandeDetail
+     */
+    public void deletCommandeDetail(CommandeDetail commandeDetail){
+        Collection<CommandeProducteur> cp = (Collection<CommandeProducteur>) commandeProducteurRepository.findByidCommandeDetails(commandeDetail.getIdCommande());
+        commandeDetailRepository.delete(commandeDetail);
+        commandeProducteurRepository.deleteAll(cp);
     }
 }

@@ -7,9 +7,10 @@ spring:
       password:
       driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update
-    #show-sql: true
+
 
     properties:
       hibernate:
@@ -21,6 +22,8 @@ logging:
     root: error
     com.lifat: info
     org.springframework.boot.web.embedded.tomcat: info
+    org.hibernate.sql: TRACE
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 server:
   port: 9020
