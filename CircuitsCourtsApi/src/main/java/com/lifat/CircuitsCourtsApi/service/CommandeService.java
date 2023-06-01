@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.web.servlet.oauth2.resourceserver.OpaqueTokenDsl;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.beans.Transient;
 import java.util.*;
 
 @Service
@@ -57,6 +59,7 @@ public class CommandeService {
     public Iterable<Commande> getAllCommandesByProd(Long id) {
         return commandeRepository.findAllCommandesByProducteur(id);
     }
+
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -108,8 +111,12 @@ public class CommandeService {
                     //System.out.println(cp.toString());
                     doesCommandeProdExist(cp.getId());
                     doesProducteurExist(cp.getIdProducteur());
-                    if (doesPorducteurHaveEnough(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite())) {
-                        producteurRepository.updateQteProduit(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite());
+                    Optional<Producteur> producteur = producteurRepository.findById(cp.getIdProducteur());
+                    Optional<Client> client = clientRepository.findById(commandeInfo.getCommande().getIdClient());
+                    if(doesProducteurCanDelivery(producteur.get(), client.get())){
+                        if (doesPorducteurHaveEnough(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite())) {
+                            producteurRepository.updateQteProduit(cp.getIdProducteur(), cd.getIdProduit(), cp.getQuantite());
+                        }
                     }
                 }
             }
@@ -172,7 +179,6 @@ public class CommandeService {
     }
 
 
-    //TODO : dans le cas ou plusieurs producteurs completent une commande il faut les trier du plus proche au plus loin du producteur initial.
 
     /**
      * Verifie que le producteur à bien le produit voulu avec assez de stock.
@@ -255,10 +261,21 @@ public class CommandeService {
         } else throw new Exception("Le produit n°" + idProduit + " n'existe pas");
     }
 
+    @Autowired
+    private GeoPortailApiService geoPortailApiService;
 
-    //TODO : verification que le rayon de livraison du ou des producteur > distance producteurs/Client.
-    public boolean doesProducteurCanDelivery(Float rayonLivraison, Float distance) {
-        return false;
+    /**
+     * verifie la distantce entre un producteur et son client
+     * @param producteur
+     * @param client
+     * @return true si rayon_livraison > distance
+     * @throws Exception si rayon_livraison < distance
+     */
+    public boolean doesProducteurCanDelivery(Producteur producteur, Client client) throws Exception {
+        double meter =geoPortailApiService.verifDistanceBetweenProducteurAndClient(producteur.getLatitude(), producteur.getLongitude(), client.getLatitude(), client.getLongitude());
+        if(meter > producteur.getRayon_Livraison()){
+            throw new Exception("Le client se situe trop loin du producteur : "+ producteur.getLibelle()+","+ producteur.getId_Producteur()+", rayon de livraison "+ producteur.getRayon_Livraison()+" km."+ "\ndistance avec le client :"+client.getAdresse()+"\n" + meter + " km.");
+        } else return true;
     }
 
     /**
@@ -316,7 +333,6 @@ public class CommandeService {
     }
 
 
-    //TODO =============================== A FINIR ================================
 
     /**
      * Verification et modification entre la commandeInfo de base et l'update
@@ -330,14 +346,16 @@ public class CommandeService {
         CommandeInfo originalCommandeInfo = getCommandeInfo(updateCommandeInfo.getCommande().getId());
 
         if(verifCommandeInfo(updateCommandeInfo)){
+            Long commandeId = originalCommandeInfo.getCommande().getId();
             deletCommandeInfo(originalCommandeInfo.getCommande().getId());
+            originalCommandeInfo.getCommande().setId(commandeId);
             return updateCommandeInfo;
         }
         return originalCommandeInfo;
     }
 
     /**
-     * supprime la commandeInfo si possible
+     * Supprime toute la commadeInfo
      *
      * @param idCommande id de la commande info a supprimer
      * @return true si la commande info a ete supprimee
@@ -353,6 +371,7 @@ public class CommandeService {
             //on a besoin de la commande detail en question pour recuperer le produit
             Optional<CommandeDetail> cd = commandeDetailRepository.findById(cp.getIdCommandeDetails());
             commandeProducteurRepository.reatributStockToProducteur(cp.getIdProducteur(),cd.get().getIdProduit() ,cp.getQuantite());
+            commandeProducteurRepository.delete(cp);
         }
 
         //on supprime les commandes details
@@ -362,6 +381,13 @@ public class CommandeService {
         //on supprime la commande
         commandeRepository.delete(commandeInfoToDelete.getCommande());
     }
+
+    //TODO : delete pour l'update
+    /**
+     * supprime la commandeInfo sans supprimer la commande
+     * Utile dans le cas de l'update de la commandeInfo car
+     * dans l'update tout est supprimé pour etre remplacé mais si la commande n'existe plus le save va auto incrementer l'objet au lieu de juste faire une update
+     */
 
     /**
      * retrouve la commande info dans sa totalité à partir de l'id d'une commande

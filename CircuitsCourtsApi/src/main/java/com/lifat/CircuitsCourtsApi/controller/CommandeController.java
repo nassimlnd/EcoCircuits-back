@@ -269,6 +269,7 @@ public class CommandeController {
             //si la verification de l'update de la commande info est valide on enregistre tout dans la bd
             //la save d'un objet déja existant dans la bd == update.
             CommandeInfo commandeInfo1 = commandeService.verifCommandeInfoUpdate(commandeInfo);
+            System.out.println(commandeInfo1.getCommande().getId());
             //les verifications sont passées pour l'update
             if (commandeInfo1.equals(commandeInfo)) {
                 commandeService.saveCommande(commandeInfo.getCommande());

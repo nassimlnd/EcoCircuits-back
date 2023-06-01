@@ -43,10 +43,10 @@ public class Producteur {
     private Float rayon_Livraison;
 
     @Column(name = "latitude", scale = 6)
-    private Double longitude;
+    private Double latitude;
 
     @Column(name ="longitude", scale = 6)
-    private Double latitude;
+    private Double longitude;
 
     @JsonIgnore
     @OneToMany(mappedBy = "produit")

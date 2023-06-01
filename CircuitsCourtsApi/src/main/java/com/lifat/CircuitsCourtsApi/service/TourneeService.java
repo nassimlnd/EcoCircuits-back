@@ -24,10 +24,16 @@ public class TourneeService {
         tourneeRepository.delete(tournee);
     }
 
+    public Tournee save(Tournee tournee) {
+        return tourneeRepository.save(tournee);
+    }
+
     //=================---------------------------=================
 
     //TODO : verification de la validité de la tournee
-    public boolean isTourneeValid(Tournee tournee){
+    public boolean isTourneeValid(Tournee tournee)throws Exception{
         return false;
     }
+
+
 }

@@ -42,4 +42,17 @@ public class TourneeController {
         } else return ResponseEntity.badRequest().body("La tournee n°" + id + "n'existe pas");
     }
 
+
+    //TODO
+    @PostMapping("/tournee/verif")
+    public ResponseEntity<?> verifTournee(@RequestBody Tournee tournee){
+        try{
+            tourneeService.isTourneeValid(tournee);
+            tourneeService.save(tournee);
+            return ResponseEntity.ok().body(tournee);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

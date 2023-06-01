@@ -41,5 +41,7 @@ public class Commande {
         this.dateCommande = dateCommande;
     }
 
-
+    @ManyToOne
+    @JoinColumn(name ="id_tournee")
+    private Tournee tournee;
 }

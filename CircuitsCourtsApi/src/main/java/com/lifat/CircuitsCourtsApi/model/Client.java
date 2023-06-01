@@ -48,4 +48,9 @@ public class Client {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "latitude", scale = 6)
+    private double latitude;
+
+    @Column(name = "longitude", scale = 6)
+    private double longitude;
 }
