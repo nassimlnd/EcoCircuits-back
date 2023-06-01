@@ -252,14 +252,6 @@ public class CommandeController {
         OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse(commande.getId(), commande.getIdClient(), commande.getDateCommande(), orderProductResponses);
 
 
-        Commande commande1 = new Commande();
-        commande1 = commandeService.saveCommande(commande1);
-        commande1.getId();
-
-        CommandeDetail commandeDetail = new CommandeDetail();
-        commandeDetail.setIdProduit(2L);
-        commandeDetail.setIdCommande(commande1.getId());
-
         return ResponseEntity.ok(orderDetailsResponse);
     }
 

@@ -57,8 +57,6 @@ public class UserController {
     public User updateUser(@PathVariable Long id, @RequestBody UserUpdateRequest user) {
         User user1 = userService.findById(id);
 
-
-
         user1.setUsername(user.getUsername());
         user1.setEmail(user.getEmail());
 

@@ -97,6 +97,8 @@ public class ProducteurController {
             producteursProduitResponse.setAdresse(producteur.getAdresse());
             producteursProduitResponse.setMail(producteur.getMail());
             producteursProduitResponse.setRayonLivraison(producteur.getRayon_Livraison());
+            producteursProduitResponse.setLatitude(producteur.getLatitude());
+            producteursProduitResponse.setLongitude(producteur.getLongitude());
             producteursProduitResponse.setIdProduit(existingProduit.getId());
             producteursProduitResponse.setLibelle(existingProduit.getLibelle());
             producteursProduitResponse.setQuantite(produitsProducteurs.getQuantite());
