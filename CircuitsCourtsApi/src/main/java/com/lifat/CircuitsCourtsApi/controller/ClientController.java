@@ -1,6 +1,9 @@
 package com.lifat.CircuitsCourtsApi.controller;
 
+import com.lifat.CircuitsCourtsApi.model.Adresse;
 import com.lifat.CircuitsCourtsApi.model.Client;
+import com.lifat.CircuitsCourtsApi.payload.response.CustomerResponse;
+import com.lifat.CircuitsCourtsApi.service.AdresseService;
 import com.lifat.CircuitsCourtsApi.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -20,10 +24,33 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private AdresseService adresseService;
+
     @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
     @GetMapping("/clients")
     public ResponseEntity<?> getClients() {
-            return ResponseEntity.ok(clientService.getClients());
+        Iterable<Client> clients = clientService.getClients();
+        ArrayList<CustomerResponse> customerResponses = new ArrayList<>();
+
+        for (Client client : clients) {
+            CustomerResponse customerResponse = new CustomerResponse();
+            customerResponse.setId(client.getId());
+            customerResponse.setNom(client.getNom());
+            customerResponse.setPrenom(client.getPrenom());
+            customerResponse.setAdresse(client.getAdresse());
+            customerResponse.setVille(client.getVille());
+            customerResponse.setCodePostal(client.getCodePostal());
+            customerResponse.setTelephone(client.getTelephone());
+            customerResponse.setEmail(client.getEmail());
+
+            Iterable<Adresse> adresses = adresseService.getAdressesByClient(client);
+            customerResponse.setAdresses(adresses);
+
+            customerResponses.add(customerResponse);
+        }
+
+        return ResponseEntity.ok(customerResponses);
 
     }
 
@@ -31,10 +58,27 @@ public class ClientController {
     @GetMapping("/clients/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id)  {
         Optional<Client> existingClient = clientService.getClient(id);
-        if(existingClient.isEmpty()){
+        if(!existingClient.isPresent()){
             return ResponseEntity.badRequest().body("le client n°" + id + "n'existe pas");
         }
-        return ResponseEntity.ok(clientService.getClient(id));
+
+        Client client = existingClient.get();
+
+        CustomerResponse customerResponse = new CustomerResponse();
+        customerResponse.setId(client.getId());
+        customerResponse.setNom(client.getNom());
+        customerResponse.setPrenom(client.getPrenom());
+        customerResponse.setAdresse(client.getAdresse());
+        customerResponse.setVille(client.getVille());
+        customerResponse.setCodePostal(client.getCodePostal());
+        customerResponse.setTelephone(client.getTelephone());
+        customerResponse.setEmail(client.getEmail());
+
+        Iterable<Adresse> adresses = adresseService.getAdressesByClient(client);
+        customerResponse.setAdresses(adresses);
+
+
+        return ResponseEntity.ok(customerResponse);
     }
 
     @PreAuthorize("hasRole('ORGANISATEUR') or hasRole('ADMIN')")
