@@ -3,6 +3,7 @@ package com.lifat.CircuitsCourtsApi.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 
 @Entity
 @Data
@@ -20,4 +21,13 @@ public class Adresse {
     @Column(name = "ville")
     private String ville;
 
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name = "longitude")
+    private double longitude;
+
+    @ManyToOne
+    @JoinColumn(name = "id_client")
+    private Client client;
 }
