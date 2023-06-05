@@ -1,25 +1,24 @@
-package com.lifat.CircuitsCourtsApi.service;
+package com.lifat.CircuitsCourtsApi.service.calculTournee;
 
-import com.lifat.CircuitsCourtsApi.model.Client;
-import com.lifat.CircuitsCourtsApi.model.Producteur;
+import com.lifat.CircuitsCourtsApi.model.*;
+import com.lifat.CircuitsCourtsApi.repository.ClientRepository;
+import com.lifat.CircuitsCourtsApi.repository.CommandeProducteurRepository;
+import com.lifat.CircuitsCourtsApi.repository.CommandeRepository;
 import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
+
+import com.lifat.CircuitsCourtsApi.service.calculTournee.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.ortools.constraintsolver.Assignment;
+import com.google.ortools.constraintsolver.FirstSolutionStrategy;
+import com.google.ortools.constraintsolver.RoutingIndexManager;
+import com.google.ortools.constraintsolver.RoutingModel;
+import com.google.ortools.constraintsolver.RoutingSearchParameters;
+import com.google.ortools.constraintsolver.main;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
+import java.awt.*;
+import java.util.*;
 
 @Service
 public class GeoPortailApiService {
@@ -37,19 +36,20 @@ public class GeoPortailApiService {
 
     /**
      * Calcule une distance en metre entre 2 points gps
+     *
      * @param latitude1
      * @param longitude1
      * @param latitude2
      * @param longitude2
      * @return la distance en m
      */
-    public double verifDistanceBetweenProducteurAndClient(double latitude1, double longitude1, double latitude2, double longitude2){
-        System.out.println(latitude1 +" "+ latitude2 +" "+ longitude1+" "+longitude2);
+    public double verifDistanceBetweenProducteurAndClient(double latitude1, double longitude1, double latitude2, double longitude2) {
+        System.out.println(latitude1 + " " + latitude2 + " " + longitude1 + " " + longitude2);
         latitude1 = Math.toRadians(latitude1);
         latitude2 = Math.toRadians(latitude2);
         longitude1 = Math.toRadians(longitude1);
         longitude2 = Math.toRadians(longitude2);
-        System.out.println(latitude1 +" "+ latitude2 +" "+ longitude1+" "+longitude2);
+        System.out.println(latitude1 + " " + latitude2 + " " + longitude1 + " " + longitude2);
 
         double earthRadius = 6371.07103; // Rayon de la Terre en kilomètres
         double diffLat = latitude2 - latitude1;
@@ -61,8 +61,10 @@ public class GeoPortailApiService {
         System.out.println("distance en km : " + distance);
         return distance;
 
-
     }
 
 
 }
+
+
+

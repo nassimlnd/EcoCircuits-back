@@ -8,6 +8,8 @@ import javax.validation.constraints.Pattern;
 
 import lombok.Data;
 
+import java.util.Collection;
+
 @Data
 @Entity
 @Table(name = "clients")
@@ -53,4 +55,7 @@ public class Client {
 
     @Column(name = "longitude", scale = 6)
     private double longitude;
+
+    @OneToMany(mappedBy = "client")
+    private Collection<Adresse> adresses;
 }

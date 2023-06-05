@@ -12,6 +12,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.transaction.Transactional;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Repository
 public interface CommandeProducteurRepository extends CrudRepository<CommandeProducteur, Long> {
@@ -32,11 +36,14 @@ public interface CommandeProducteurRepository extends CrudRepository<CommandePro
     @Query(value = "SELECT cp.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cd.id = :idCommandeDetail", nativeQuery = true)
     Iterable<CommandeProducteur> findCommandeProdByCommandeDetail(@Param("idCommandeDetail") Long idCommandeDetail);
 
-    @Query(value = "SELECT cd.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cp.id = :idCommandeProd " ,nativeQuery = true)
-    CommandeDetail findCommandeDetailByCommandeProdId(@Param("idCommandeProd")Long idCommandeProd);
+    @Query(value = "SELECT cd.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cp.id_commande_details = :idCommandeDetail" ,nativeQuery = true)
+    CommandeDetail findCommandeDetailByCommandeProd(@Param("idCommandeDetail")Long idCommandeDetail);
 
     @Modifying
     @Transactional
     @Query(value = "UPDATE produits_producteurs SET quantite = quantite + :quantite WHERE id_producteur = :idProducteur AND id_produit = :idProduit", nativeQuery = true)
     void reatributStockToProducteur(@Param("idProducteur") Long idProducteur, @Param("idProduit") Long idProduit, @Param("quantite") Float quantite);
+
+    @Query(value = "SELECT * FROM commande_producteur WHERE id_producteur = :idProducteur", nativeQuery = true)
+    List<CommandeProducteur> findAllByIdProducteur(@Param("idProducteur") Long idProducteur);
 }

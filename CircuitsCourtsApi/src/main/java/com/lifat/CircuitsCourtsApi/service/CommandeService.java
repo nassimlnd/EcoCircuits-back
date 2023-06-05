@@ -7,13 +7,10 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.*;
 import com.lifat.CircuitsCourtsApi.repository.*;
-import org.apache.tomcat.util.digester.ObjectCreateRule;
+import com.lifat.CircuitsCourtsApi.service.calculTournee.GeoPortailApiService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.web.servlet.oauth2.resourceserver.OpaqueTokenDsl;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.beans.Transient;
 import java.util.*;
 
 @Service
