@@ -1,5 +1,6 @@
 package com.lifat.CircuitsCourtsApi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -27,6 +28,7 @@ public class Adresse {
     @Column(name = "longitude")
     private double longitude;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "id_client")
     private Client client;
