@@ -3,10 +3,7 @@ package com.lifat.CircuitsCourtsApi.service.calculTournee;
 import com.google.ortools.Loader;
 import com.google.ortools.constraintsolver.*;
 import com.lifat.CircuitsCourtsApi.model.*;
-import com.lifat.CircuitsCourtsApi.repository.ClientRepository;
-import com.lifat.CircuitsCourtsApi.repository.CommandeProducteurRepository;
-import com.lifat.CircuitsCourtsApi.repository.CommandeRepository;
-import com.lifat.CircuitsCourtsApi.repository.ProducteurRepository;
+import com.lifat.CircuitsCourtsApi.repository.*;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Queue;
@@ -34,9 +32,11 @@ public class VrpGlobalSpan {
         // la matrice de distance doit contenir la distance netre tous les points de la tournee.
         //-------- initailisation des données ---------
         final Data data = new Data();
-        data.distanceMatrix = initializeDistanceMatrix(commandesProducteurs);
         data.vehiculeNumber= 1;
         data.depot = 0;
+        data.distanceMatrix = initializeDistanceMatrix(commandesProducteurs);
+        afficheMatrice(data.distanceMatrix);
+
 
         Loader.loadNativeLibraries();
 
@@ -75,6 +75,15 @@ public class VrpGlobalSpan {
         return null;
     }
 
+    private void afficheMatrice(double[][] distanceMatrix) {
+        for (int i = 0; i < distanceMatrix.length ; i++) {
+            for (int j = 0; j < distanceMatrix.length ; j++) {
+                System.out.print(distanceMatrix[i][j] + " | ");
+            }
+            System.out.println();
+        }
+    }
+
     public void printSolution( Data data, RoutingModel routingModel, RoutingIndexManager routingIndexManager, Assignment solution){
         //solution cost
         logger.info("Objective : " + solution.objectiveValue());
@@ -92,15 +101,15 @@ public class VrpGlobalSpan {
                 routeDistance += routingModel.getArcCostForVehicle(previousIndex, index, i);
             }
             logger.info(route + routingIndexManager.indexToNode(index));
-            logger.info("Distance of the route: " + routeDistance + "m");
+            logger.info("Distance of the route: " + routeDistance + "km");
             maxRouteDistance = Math.max(routeDistance, maxRouteDistance);
         }
-        logger.info("Maximum of the route distances: " + maxRouteDistance + "m");
+        logger.info("Maximum of the route distances: " + maxRouteDistance + "km");
     }
 
 
     @Autowired
-    private CommandeProducteurRepository commandeProducteurRepository;
+    private CommandeDetailRepository commandeDetailRepository;
 
     @Autowired
     private ClientRepository clientRepository;
@@ -119,34 +128,35 @@ public class VrpGlobalSpan {
      * Pour chaque commande prod calcule la distance entre le producteur et le client, et entre le client et tous les autres cilents
      *
      * @param commandesProducteurs
-     * @return une matrice de distances exploitable par la bibilotheque google OR-tools (matrice carrée)
+     * @return une matrice de distances exploitable par la bibilotheque google OR-tools (matrice carrée) chaque element de la matrice[i][j] représente la distance en km entre le point i et j
      */
     private double[][] initializeDistanceMatrix(ArrayList<CommandeProducteur> commandesProducteurs) {
         int matrixSize = commandesProducteurs.size();
         //recupere la commandeDetail chaque CommandeProducteur
         //une ArrayList<Point> pour recuperer toutes les points possibles de la tournee !! le producteur DOIT être le permier de la list.
         //on crée un point à partir des coordonées gps du producteur et on le met en 1er dans la liste.
-        ArrayList<Point> points = new ArrayList<>();
-
+        ArrayList<Point2D.Double> points = new ArrayList<>();
+        System.out.println(commandesProducteurs);
         Long idProd = commandesProducteurs.get(0).getIdProducteur();
         System.out.println(" ID PRODUCTEUR : " + idProd);
         Optional<Producteur> producteur = producteurRepository.findById(idProd);
-        System.out.println(" PRIDUCTEUR : "+ producteur);
-        Point pointProd = new Point();
+        System.out.println(" PRODUCTEUR : "+ producteur);
+        Point2D.Double pointProd = new Point2D.Double();
         pointProd.setLocation(producteur.get().getLatitude(), producteur.get().getLongitude());
         points.add(pointProd);
+        System.out.println(pointProd);
         //on recupere le client pour toutes les commandes prod en passant par la commandeProd --> commandeDetail --> commande --> client.
         // puis on crée un point composé des coordonées gps du client.
         for (CommandeProducteur cp : commandesProducteurs) {
             System.out.println(cp.toString());
-            CommandeDetail cd = commandeProducteurRepository.findCommandeDetailByCommandeProd(cp.getIdCommandeDetails());
-            System.out.println(cd.toString());
+            CommandeDetail cd = commandeDetailRepository.findOneCommandeDetailByCommandeProd(cp.getIdCommandeDetails());
+            //System.out.println(cd.toString());
             //pas besoin de faire verification produceur.isEmpty() car ce sont des prod d'une commande deja verifiée.
             Optional<Producteur> temp = producteurRepository.findById(cp.getIdProducteur());
             Optional<Commande> commande = commandeRepository.findById(cd.getIdCommande());
             Optional<Client> client = clientRepository.findById(commande.get().getIdClient());
             System.out.println(client);
-            Point p = new Point();
+            Point2D.Double p = new Point2D.Double();
             p.setLocation(client.get().getLatitude(), client.get().getLongitude());
             points.add(p);
         }
@@ -154,18 +164,16 @@ public class VrpGlobalSpan {
         // sachant que le 1er element de l'arrayList est Point représentant les coordonées gps du producteur
         double[][] result = new double[matrixSize][matrixSize];
         for (int i = 0; i < matrixSize; i++) {
-            System.out.println("_");
+
             for (int j = 0; j < matrixSize; j++) {
                 //le cas ou on calcule la distance du depot au depot
                 // metre 0 manuelement pour signifier que la distance est nulle
-                if (i == j) {
+               if (i == j) {
                     result[i][j] = 0;
-                    System.out.println(result[i][j] + " |");
                 }
                 //calcule distance entre 2 points
                 //latitude 1, longitude 1, latitude 2, longitude 2
-                result[i][j] = geoPortailApiService.verifDistanceBetweenProducteurAndClient(points.get(i).x, points.get(i).y, points.get(j).x, points.get(j).y);
-                System.out.println(result[i][j] + " |");
+                result[i][j] = geoPortailApiService.verifDistanceBetweenProducteurAndClient(points.get(i).getX(), points.get(i).getY(), points.get(j).getX(), points.get(j).getY());
             }
         }
         return result;

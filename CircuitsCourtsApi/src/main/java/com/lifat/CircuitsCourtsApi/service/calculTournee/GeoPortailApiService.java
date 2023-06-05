@@ -41,15 +41,15 @@ public class GeoPortailApiService {
      * @param longitude1
      * @param latitude2
      * @param longitude2
-     * @return la distance en m
+     * @return la distance en km
      */
     public double verifDistanceBetweenProducteurAndClient(double latitude1, double longitude1, double latitude2, double longitude2) {
-        System.out.println(latitude1 + " " + latitude2 + " " + longitude1 + " " + longitude2);
+       // System.out.println(latitude1 + " " + latitude2 + " " + longitude1 + " " + longitude2);
         latitude1 = Math.toRadians(latitude1);
         latitude2 = Math.toRadians(latitude2);
         longitude1 = Math.toRadians(longitude1);
         longitude2 = Math.toRadians(longitude2);
-        System.out.println(latitude1 + " " + latitude2 + " " + longitude1 + " " + longitude2);
+        //System.out.println(latitude1 + " " + latitude2 + " " + longitude1 + " " + longitude2);
 
         double earthRadius = 6371.07103; // Rayon de la Terre en kilomètres
         double diffLat = latitude2 - latitude1;
@@ -58,7 +58,7 @@ public class GeoPortailApiService {
                 + Math.cos(latitude1) * Math.cos(latitude2) * Math.pow(Math.sin(diffLon / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distance = earthRadius * c;
-        System.out.println("distance en km : " + distance);
+       // System.out.println("distance en km : " + distance);
         return distance;
 
     }

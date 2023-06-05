@@ -8,6 +8,7 @@ import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -47,8 +48,4 @@ public class Producteur {
 
     @Column(name ="longitude", scale = 6)
     private Double longitude;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "produit")
-    private Set<ProduitsProducteurs> lesProduits;
 }

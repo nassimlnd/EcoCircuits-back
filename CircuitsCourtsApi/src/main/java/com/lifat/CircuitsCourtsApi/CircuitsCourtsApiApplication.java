@@ -33,7 +33,7 @@ public class CircuitsCourtsApiApplication implements CommandLineRunner {
 	public void run(String... args) {
 		try {
 			//geoPortailApiService.scriptGetCoodGpsForAll(producteurRepository.findById(6L));
-			//tourneeService.testVrp(14L);
+			tourneeService.testVrp(14L);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

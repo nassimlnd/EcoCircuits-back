@@ -56,6 +56,6 @@ public class Client {
     @Column(name = "longitude", scale = 6)
     private double longitude;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     private Collection<Adresse> adresses;
 }

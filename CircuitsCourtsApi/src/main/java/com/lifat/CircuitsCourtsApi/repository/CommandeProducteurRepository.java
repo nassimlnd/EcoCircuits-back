@@ -36,9 +36,6 @@ public interface CommandeProducteurRepository extends CrudRepository<CommandePro
     @Query(value = "SELECT cp.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cd.id = :idCommandeDetail", nativeQuery = true)
     Iterable<CommandeProducteur> findCommandeProdByCommandeDetail(@Param("idCommandeDetail") Long idCommandeDetail);
 
-    @Query(value = "SELECT cd.* FROM commande_details cd INNER JOIN commande_producteur cp ON cd.id = cp.id_commande_details WHERE cp.id_commande_details = :idCommandeDetail" ,nativeQuery = true)
-    CommandeDetail findCommandeDetailByCommandeProd(@Param("idCommandeDetail")Long idCommandeDetail);
-
     @Modifying
     @Transactional
     @Query(value = "UPDATE produits_producteurs SET quantite = quantite + :quantite WHERE id_producteur = :idProducteur AND id_produit = :idProduit", nativeQuery = true)
