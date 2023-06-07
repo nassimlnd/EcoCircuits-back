@@ -66,9 +66,6 @@ public class CommandeController {
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-
-
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")

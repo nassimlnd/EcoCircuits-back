@@ -41,6 +41,9 @@ public class Commande {
         this.dateCommande = dateCommande;
     }
 
+    @Column(name = "id_adresse_livraison")
+    private Long idAdresseLivraison;
+
     @ManyToOne
     @JoinColumn(name ="id_tournee")
     private Tournee tournee;
