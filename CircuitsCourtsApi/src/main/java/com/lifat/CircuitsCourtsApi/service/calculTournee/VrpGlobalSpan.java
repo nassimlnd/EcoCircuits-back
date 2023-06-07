@@ -152,7 +152,7 @@ public class VrpGlobalSpan {
             CommandeDetail cd = commandeDetailRepository.findOneCommandeDetailByCommandeProd(cp.getIdCommandeDetails());
             //System.out.println(cd.toString());
             //pas besoin de faire verification produceur.isEmpty() car ce sont des prod d'une commande deja verifiée.
-            Optional<Producteur> temp = producteurRepository.findById(cp.getIdProducteur());
+            //Optional<Producteur> temp = producteurRepository.findById(cp.getIdProducteur());
             Optional<Commande> commande = commandeRepository.findById(cd.getIdCommande());
             Optional<Client> client = clientRepository.findById(commande.get().getIdClient());
             System.out.println(client);

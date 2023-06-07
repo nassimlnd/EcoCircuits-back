@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.*;
+import com.lifat.CircuitsCourtsApi.payload.request.CreateOrderRequest;
 import com.lifat.CircuitsCourtsApi.payload.response.OrderDetailsResponse;
 import com.lifat.CircuitsCourtsApi.payload.response.OrderProductDetailsResponse;
 import com.lifat.CircuitsCourtsApi.payload.response.OrderProductProducerResponse;
@@ -50,11 +51,23 @@ public class CommandeController {
         return ResponseEntity.ok(commandeService.getCommande(id));
     }
 
+    /**
+     * Le front envoie une commande sans commandes prod affectée
+     * Save de la commande et des ses commandes Details
+     * @param commande
+     * @return La commande sauvegardé.
+     */
     @PostMapping("/commandes")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
-    public ResponseEntity<?> saveCommande(@RequestBody Commande commande) {
-        Commande savedCommande = commandeService.saveCommande(commande);
-        return ResponseEntity.ok(savedCommande);
+    public ResponseEntity<?> saveCommande(@RequestBody CreateOrderRequest commande) throws Exception {
+        try {
+            Commande savedCommande = commandeService.saveCommandeWithOutProd(commande);
+            return ResponseEntity.ok(savedCommande);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+
 
     }
 

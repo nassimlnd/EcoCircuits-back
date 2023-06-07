@@ -32,6 +32,8 @@ public class ProductOrderRequest {
 
     private Float prix;
 
+    private Float quantite;
+
     Iterable<Producteur> producteurs;
 
 }

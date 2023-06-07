@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.lifat.CircuitsCourtsApi.model.*;
+import com.lifat.CircuitsCourtsApi.payload.request.CreateOrderRequest;
+import com.lifat.CircuitsCourtsApi.payload.request.ProductOrderRequest;
 import com.lifat.CircuitsCourtsApi.repository.*;
 import com.lifat.CircuitsCourtsApi.service.calculTournee.GeoPortailApiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -498,4 +500,34 @@ public class CommandeService {
     }
 
 
+    /**
+     * Crée une commande et ses commandeDetail via les objet du payload CreateOrderRequest et ProductOrderRequest
+     * @param commande sans producteur associé à la commande.
+     * @return la nouvelle commande.
+     * @throws Exception si le produit ou le client n'existe pas.
+     */
+    public Commande saveCommandeWithOutProd(CreateOrderRequest commande) throws Exception {
+        Commande newCommande = new Commande();
+        //on recupere l'id du client via l'objet CustomerOrderResponse
+        Long idClient = commande.getCustomer().getId();
+        if(clientRepository.existsById(idClient)){
+            newCommande.setIdClient(idClient);
+            saveCommande(newCommande);
+            for (ProductOrderRequest product: commande.getProducts()) {
+                //création de commandeDetail a partir de l'objet recu ProductOrderRequest
+                if(produitRepository.existsById(product.getId())){
+                    Produit produit = produitRepository.findById(product.getId()).get();
+                    CommandeDetail newCommommandeDetail = new CommandeDetail();
+                    newCommommandeDetail.setIdCommande(newCommande.getId());
+                    newCommommandeDetail.setIdProduit(produit.getId());
+                    newCommommandeDetail.setQuantite(product.getQuantite());
+                    commandeDetailService.saveCommandeDetail(newCommommandeDetail);
+                }
+                throw new Exception("Le produit n°" + product.getId()+ " n'existe pas");
+            }
+        } else{
+            throw new Exception("Le client n° "+ idClient + " n'existe pas.");
+        }
+        return newCommande;
+    }
 }
