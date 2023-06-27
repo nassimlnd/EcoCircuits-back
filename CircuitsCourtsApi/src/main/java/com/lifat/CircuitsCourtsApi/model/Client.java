@@ -32,8 +32,6 @@ public class Client {
     @Column(name = "adresse")
     private String adresse;
 
-   // @Min(5)
-   // @Max(5)
     @Column(name = "code_postal")
     private Integer codePostal;
 
@@ -41,8 +39,6 @@ public class Client {
     @Column(name = "ville")
     private String ville;
 
-    //@Min(10)
-    //@Max(10)
     @Column(name = "telephone")
     private String telephone;
 

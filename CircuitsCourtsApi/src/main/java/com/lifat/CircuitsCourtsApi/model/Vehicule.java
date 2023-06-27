@@ -17,7 +17,6 @@ public class Vehicule {
     private Long id_vehicule;
 
     @Column(name = "matricule")
-    //@Pattern(regexp = "^[A-Z]{2}-\\d{3}-[A-Z]{2}$")
     @NotNull
     private String matricule;
 
