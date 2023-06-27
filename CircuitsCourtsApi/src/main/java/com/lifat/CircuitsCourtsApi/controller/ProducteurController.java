@@ -116,7 +116,7 @@ public class ProducteurController {
      * @param id      id du producteur qui a ce produit
      * @param produit le nouveau produit a sauvegarder
      * @return le nouveau produit
-     * @Param stock représente la quantiter a modifier
+     * @param stock représente la quantiter a modifier
      */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole ('PRODUCTEUR')")
     @PutMapping("/producteur/produit/update/{id}")

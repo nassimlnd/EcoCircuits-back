@@ -65,7 +65,7 @@ public class CommandeService {
      *  modifie la commande voulu en fonction du JsonPatch
      *  modification partielle de la commande
      * @param patch Json patch recupéré dans le controller
-     * @param targetCommande
+     * @param  targetCommande la commande ciblée
      * @return la nouvelle commande
      * @throws JsonPatchException
      * @throws JsonProcessingException
@@ -137,11 +137,11 @@ public class CommandeService {
 
     /**
      * Récupere toutes les commandesProd et commandesDetail de la commandeInfo pour les mettre trier via une
-     * hasmap<CommandeDetail, ArrayList<CommandeProducteur>>, cela permet d'associer a chaque commandeDetail les commandeProducteur
+     * HasMap<CommandeDetail, ArrayList <CommandeProducteur>>, cela permet d'associer a chaque commandeDetail les commandeProducteur
      * correspondentes.
      *
      * @param commandeInfo
-     * @return HashMap<CommandeDetail, ArrayList < CommandeProducteur>>
+     * @return HashMap<CommandeDetail, ArrayList <CommandeProducteur>>
      */
     public HashMap<CommandeDetail, ArrayList<CommandeProducteur>> getCommandesProducteurByCommandeDetail(CommandeInfo commandeInfo) {
         HashMap resultHashMap = new HashMap();
@@ -265,7 +265,7 @@ public class CommandeService {
      * @param producteur
      * @param client
      * @return true si rayon_livraison > distance
-     * @throws Exception si rayon_livraison < distance
+     * @throws Exception si rayon_livraison inferieur a distance
      */
     public boolean doesProducteurCanDelivery(Producteur producteur, Client client) throws Exception {
         double meter =geoPortailApiService.verifDistanceBetweenProducteurAndClient(producteur.getLatitude(), producteur.getLongitude(), client.getLatitude(), client.getLongitude());
@@ -401,7 +401,6 @@ public class CommandeService {
      * Supprime toute la commadeInfo
      *
      * @param idCommande id de la commande info a supprimer
-     * @return true si la commande info a ete supprimee
      * @throws Exception si non
      */
     public void deletCommandeInfo(Long idCommande) throws Exception {
@@ -488,7 +487,7 @@ public class CommandeService {
     /**
      * Récupère toutes les commandes liées à un produit d'id idProduit
      * @param idProduit
-     * @return Iterable<CommandeDetail> les commandes liées au produit
+     * @return Iterable<Commande> les commandes liées au produit
      * @throws Exception si le produit n'existe pas
      */
     public Iterable<Commande> getAllCommandesByProduit(Long idProduit) throws Exception {
