@@ -22,18 +22,6 @@ import java.util.*;
 
 @Service
 public class GeoPortailApiService {
-
-    @Autowired
-    private ProducteurRepository producteurRepository;
-
-    /**
-     * Verifie que le client se situe dans le rayon de livraison du producteur
-     * @param producteur
-     * @param client
-     * @return true si le client se situe dans le rayon de livraison lance une exception sinon.
-     * @exception
-     */
-
     /**
      * Calcule une distance en metre entre 2 points gps
      *

@@ -34,23 +34,11 @@ public class TourneeService {
         return tourneeRepository.save(tournee);
     }
 
-    //=================---------------------------=================
 
-    //TODO : verification de la validité de la tournee
     public boolean isTourneeValid(Tournee tournee)throws Exception{
         return false;
     }
-
-
-    //============--------------===============
-
    @Autowired
    private VrpGlobalSpan vrpGlobalSpan;
-
-    @Autowired
-    private CommandeProducteurRepository commandeProducteurRepository;
-    public void testVrp(Long idProducteur){
-        vrpGlobalSpan.produceOptimalTourneeTraject((ArrayList<CommandeProducteur>) commandeProducteurRepository.findAllByIdProducteur(idProducteur));
-    }
 
 }

@@ -175,42 +175,6 @@ public class CommandeService {
     }
 
 
-
-    /**
-     * Verifie que le producteur à bien le produit voulu avec assez de stock.
-     * si le producteur de possede pas une quantite suffisante du produit alors
-     * on cherche tous les producteurs qui produisent ce produit et on les ajoutes dans la liste jusqu'a ce que
-     * la somme de leurs qantitées respectives du produit soit suffisante pour satisfaire la commande.
-     *
-     * @param idProduit    le produit voulu.
-     * @param idProducteur le producteur voulu.
-     * @param //qte        la quantité voulu du produit.
-     * @return une liste contenant le ou les producteurs qui satisfont la commande.
-     * <p>
-     * public Collection<Optional<Producteur>> validationProduitForProducteur(Long idProduit, Long idProducteur, Long qte) throws Exception {
-     * Optional<Producteur> producteur = producteurRepository.findById(idProducteur);
-     * //verifie si l'objet Optinal<Producteur> existe, si oui on cherche le produit chez le producteur
-     * if (producteur.isPresent()) {
-     * Collection<Optional<Producteur>> producteurs = new ArrayList<>();
-     * Optional<Produit> p = produitRepository.findProduitByIdProduitAndProducteur(idProducteur, idProduit);
-     * //si ce producteur possede un quantite suffisante du produit alors il est le seul dans la liste.
-     * if (p.isPresent() && getQuantiteByProduitId(idProduit, idProducteur) >= qte) {
-     * producteurs.add(producteur);
-     * //si le producteur ne possede pas une quantite suffisante du produit.
-     * } else if (getQuantiteByProduitId(idProduit, idProducteur) < qte) {
-     * Collection<Producteur> producteursCandidat = producteurRepository.findAllByProduit(idProduit);
-     * float quantiteActuelle = 0;
-     * for (Producteur producteurCandidat : producteursCandidat) {
-     * quantiteActuelle += produitRepository.fintQteByProduitAndProducteurs(producteurCandidat.getId_Producteur(), idProduit);
-     * if (quantiteActuelle >= qte) break;
-     * }
-     * return producteurs;
-     * }
-     * }
-     * throw new Exception("Pas assez de producteurs pou satisfaire la commande");
-     * }
-     */
-
     /**
      * recupere la quantité possédée par un producteur d'un produit
      *
@@ -219,17 +183,6 @@ public class CommandeService {
      * @return float quantite
      */
 
-    public float getQuantiteByProduitId(Long idProduit, Long idProducteur) {
-        return produitRepository.fintQteByProduitAndProducteurs(idProducteur, idProduit);
-    }
-
-
-    //sprint 2
-    //TODO : verifie que la date de la commande < date livraison de tournee.
-    public void verifDate() {
-
-
-    }
 
     /**
      * Verifie que le client existe dans la base de donnees
@@ -495,6 +448,5 @@ public class CommandeService {
             return commandeRepository.findAllCommandesByProduit(idProduit);
         } else throw new Exception("Le produit n°" + idProduit + " n'existe pas.");
     }
-
 
 }

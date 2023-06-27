@@ -19,10 +19,6 @@ public interface ProduitRepository extends CrudRepository<Produit, Long> {
             "INNER JOIN producteurs pr ON pp.id_producteur = pr.id_producteur WHERE pr.id_producteur = :idProd", nativeQuery = true)
     Collection<Produit> findProduitsByProducteur(@Param("idProd")Long idProd);
 
-    @Query(value = "SELECT * FROM produits p INNER JOIN produits_producteurs pp ON p.id = pp.id_produit" +
-            " WHERE pp.id_producteur = :idProd AND p.id = :idProduit", nativeQuery = true)
-    Optional<Produit> findProduitByIdProduitAndProducteur(@Param("idProd")Long idProd, @Param("idProduit")Long idProduit);
-
     @Query(value = "SELECT quantite FROM produits_producteurs pp WHERE pp.id_producteur = :idProd AND pp.id_produit =:idProduit", nativeQuery = true)
     float fintQteByProduitAndProducteurs(@Param("idProd") Long idProducteur, @Param("idProduit") Long idProduit);
 

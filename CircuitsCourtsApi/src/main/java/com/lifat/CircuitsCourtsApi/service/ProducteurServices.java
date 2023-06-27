@@ -34,10 +34,6 @@ public class ProducteurServices {
         return producteurRepository.findAllByProduit(idProduit);
     }
 
-
-    public Optional<Float> getQteProduit(Long idProd, Long idProduit){
-        return producteurRepository.getQteProduit(idProd, idProduit);
-    }
     public void updateQteProduit(Long idProd, Long idProduit, Float qte){
         producteurRepository.updateQteProduit(idProd, idProduit, qte);
     }

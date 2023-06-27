@@ -19,6 +19,9 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.logging.Logger;
 
+/**
+ * Classe implémente le solver Google or-tools
+ */
 @NoArgsConstructor
 @Service
 public class VrpGlobalSpan {
@@ -75,6 +78,13 @@ public class VrpGlobalSpan {
         return null;
     }
 
+    /**
+     * Ecrit en console la solution trouvée par le solver
+     * @param data l'objet contenant toutes les données
+     * @param routingModel
+     * @param routingIndexManager
+     * @param solution
+     */
     public void printSolution( Data data, RoutingModel routingModel, RoutingIndexManager routingIndexManager, Assignment solution){
         //solution cost
         logger.info("Objective : " + solution.objectiveValue());
