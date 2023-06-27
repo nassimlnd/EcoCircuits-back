@@ -44,6 +44,4 @@ public interface CommandeProducteurRepository extends CrudRepository<CommandePro
     @Query(value = "UPDATE produits_producteurs SET quantite = quantite + :quantite WHERE id_producteur = :idProducteur AND id_produit = :idProduit", nativeQuery = true)
     void reatributStockToProducteur(@Param("idProducteur") Long idProducteur, @Param("idProduit") Long idProduit, @Param("quantite") Float quantite);
 
-    @Query(value = "SELECT * FROM commande_producteur WHERE id_producteur = :idProducteur", nativeQuery = true)
-    List<CommandeProducteur> findAllByIdProducteur(@Param("idProducteur") Long idProducteur);
 }

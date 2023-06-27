@@ -11,5 +11,4 @@ public interface RoleRepository extends CrudRepository<Role, Long> {
 
     Optional<Role> findByRole(String role);
 
-    Role findByName(String role_admin);
 }

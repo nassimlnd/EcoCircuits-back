@@ -18,11 +18,8 @@ import java.util.Optional;
 
 @Repository
 public interface ProducteurRepository extends CrudRepository<Producteur, Long> {
-
-
     @Query(value = "SELECT * FROM producteurs p INNER JOIN produits_producteurs pp ON p.id_producteur = pp.id_producteur WHERE id_produit= :idProduit", nativeQuery = true)
     Collection<Producteur> findAllByProduit(@Param("idProduit")Long idProduit);
-
 
     /**
      * modifie la quantite d'un produit d'un producteur
@@ -30,7 +27,6 @@ public interface ProducteurRepository extends CrudRepository<Producteur, Long> {
      * @param idProduit
      * @param qte
      */
-
     @Modifying
     @Transactional
     @Query(value = "UPDATE produits_producteurs SET quantite = quantite - :qte WHERE id_producteur = :idProd AND id_produit = :idProduit", nativeQuery = true)

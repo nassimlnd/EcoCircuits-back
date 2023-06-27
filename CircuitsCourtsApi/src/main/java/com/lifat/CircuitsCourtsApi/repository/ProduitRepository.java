@@ -12,15 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface ProduitRepository extends CrudRepository<Produit, Long> {
-
-    //Iterable<Produit> findAllByProducteurId(Long id);
-
     @Query(value = "SELECT * FROM produits p INNER JOIN produits_producteurs pp ON p.id = pp.id_produit " +
             "INNER JOIN producteurs pr ON pp.id_producteur = pr.id_producteur WHERE pr.id_producteur = :idProd", nativeQuery = true)
     Collection<Produit> findProduitsByProducteur(@Param("idProd")Long idProd);
-
-    @Query(value = "SELECT quantite FROM produits_producteurs pp WHERE pp.id_producteur = :idProd AND pp.id_produit =:idProduit", nativeQuery = true)
-    float fintQteByProduitAndProducteurs(@Param("idProd") Long idProducteur, @Param("idProduit") Long idProduit);
 
     @Query(value = "SELECT * FROM produits p INNER JOIN commande_details cd ON p.id=cd.id_produit WHERE cd.id_commande = :idCommande", nativeQuery = true)
     Iterable<Produit> findProductsByOrder(Long idCommande);
