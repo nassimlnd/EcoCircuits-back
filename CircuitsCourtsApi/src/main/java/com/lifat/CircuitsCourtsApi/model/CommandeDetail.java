@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "commande_details")
+/**
+ * Le détail d'une correspond un produit de la commande et sa quantité, il peut y avoir plusieurs CommandeDetail par Commande.
+ */
 public class CommandeDetail {
 
     @Id

@@ -49,7 +49,12 @@ public class CommandeInfo {
     @JsonProperty("commandesProducteur")
     private Collection<CommandeProducteur> commandesProducteur;
 
-    //l'injection de dependence @Autowired ne marche pas pour les classes non gérées par spring il faut faire une injection classique
+    /**
+     * l'injection de dependence @Autowired ne marche pas pour les classes non gérées par spring il faut faire une injection classique
+     * @param commande
+     * @param commandeDetailService
+     * @param commandeProducteurService
+     */
     public CommandeInfo(Commande commande, CommandeDetailService commandeDetailService,
                         CommandeProducteurService commandeProducteurService){
         this.commande = commande;
@@ -58,41 +63,12 @@ public class CommandeInfo {
         this.commandesDetails = new ArrayList<>();
         this.commandesProducteur = new ArrayList<>();
     }
-    //sert pour recuperer une commandeInfo envoyée depuis le front
-    public CommandeInfo(Commande commande){
-        this.commande = commande;
-        this.commandesDetails = new ArrayList<>();
-        this.commandesProducteur = new ArrayList<>();
-    }
 
-    public CommandeInfo(Commande commande, ArrayList<CommandeDetail> commandeDetail, ArrayList<CommandeProducteur> commandeProducteurs) {
-        this.commande = commande;
-        this.commandesDetails = commandeDetail;
-        this.commandesProducteur = commandeProducteurs;
-    }
-
-
-    //remplit la collection de commande details avec toutes les commandes details
-    public void fillWithCommandesDetails(){
-        this.commandesDetails.clear();
-        Iterable<CommandeDetail> temp =(commandeDetailService.findAllByIdCommande(commande.getId()));
-        for (CommandeDetail cd: temp) {
-            commandesDetails.add(cd);
-        }
-    }
-
-    //repmlit la collection commandes producteur avec toutes les commandeProducteur.
-    public void fillWithCommandesProducteur(){
-        this.commandesProducteur.clear();
-        Iterable<CommandeProducteur> temp = (commandeProducteurService.findAllByIdCommande(commande.getId()));
-        for (CommandeProducteur cp : temp) {
-            commandesProducteur.add(cp);
-        }
-    }
-
-
-    //remplit la collection de CommandeDetails avec les commandes details du producteur
-    //remplit la collection de CommandesProducteur avec les bonnes CommandesProducteur
+    /**
+     * remplit la collection de CommandeDetails avec les commandes details du producteur
+     * remplit la collection de CommandesProducteur avec les bonnes CommandesProducteur
+     * @param idProducteur
+     */
     public void fillWithCommandeDetailsAndCommandeProducteurByPRodAndCommande(Long idProducteur){
            Iterable<CommandeDetail> temp = (commandeDetailService.findAllByCommandeAndProducteur(idProducteur, this.commande.getId()));
         for (CommandeDetail cd: temp) {
