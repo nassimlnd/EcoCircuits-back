@@ -15,6 +15,10 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.util.*;
 
+/**
+ * Création et gestion des privilèges.
+ * Utilisation du pattern RBAC (Role based access controls) dou l'importance des privilèges.
+ */
 @Component
 public class SetUpDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -50,20 +54,6 @@ public class SetUpDataLoader implements ApplicationListener<ContextRefreshedEven
         createRoleIfNotFound("ROLE_ADMIN", adminPrivileges);
         createRoleIfNotFound("ROLE_PRODUCTEUR", Arrays.asList(readPrivilege));
         createRoleIfNotFound("ROLE_ORGANISATEUR", Arrays.asList(readPrivilege, writePrivilege));
-
-       /* Role adminRole = roleRepository.findByName("ROLE_ADMIN");
-        User user = new User();
-        user.setUsername("test");
-        user.setPassword(passwordEncoder.encode("test"));
-        user.setEmail("test@test.com");
-        Set<Role> roles = new HashSet<>();
-        roles.add(adminRole);
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        alreadySetup = true;
-
-        */
     }
 
     @Transactional

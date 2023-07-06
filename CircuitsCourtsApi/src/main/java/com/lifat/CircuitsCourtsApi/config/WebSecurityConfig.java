@@ -33,6 +33,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
         // jsr250Enabled = true,
         prePostEnabled = true
 )
+/**
+ * classe de configuration de sécurité de l'api qui étend d'une calsse fournie par Spring Security.
+ *  définit les règles de sécurité, l'authentification des utilisateurs et la configuration CORS
+ */
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
