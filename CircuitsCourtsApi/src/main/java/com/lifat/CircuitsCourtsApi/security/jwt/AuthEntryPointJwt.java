@@ -13,6 +13,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 @Component
+/**
+ * Cette classe est utilisée pour gérer les erreurs d'authentification lorsqu'un utilisateur non authentifié tente d'accéder à une ressource protégée de l'api
+ */
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);

@@ -21,6 +21,12 @@ public class JwtUtils {
     @Value("${com.lifat.circuitscourtsapi.jwtExpirationMs: 86400000}")
     private int jwtExpirationMs;
 
+    /**
+     * Crée un token valide à partir d'une clée secrete et des données de l'utilisateur.
+     * JWT valide 24 H.
+     * @param authentication
+     * @return le JWT
+     */
     public String generateJwtToken(Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -33,10 +39,19 @@ public class JwtUtils {
                 .compact();
     }
 
+    /**
+     * Récupère le nom de l'utilisateur dans un token
+     * @param token
+     * @return le nom de l'utilisateur
+     */
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
+    /**
+     * @param authToken
+     * @return  boolean qui atteste de la validité du token
+     */
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
