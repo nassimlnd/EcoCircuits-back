@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
+/**
+ * End point de l'api pour les Hubs.
+ * Le nom des méthodes décrit leurs fonctionnement.
+ */
 public class HubController {
 
 

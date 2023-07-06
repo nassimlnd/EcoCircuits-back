@@ -22,6 +22,12 @@ import java.util.Optional;
 //@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
+/**
+ * end point de l'api pour les commandes.
+ * L'api ayant évolué nous n'utilisons presque plus les méthodes sur les objets Commande, CommandeDetail, CommandeProducteur mais commandeInfo.
+ * Pour tous les objets nous appliqons les focnctionnalitées CRUD donc les requetes ont le généralement le même but pour les différents objets.
+ * Nous avons laissé les méthodes sur les commandes de base car elles peuvent être utilies dans de rares cas.
+ */
 public class CommandeController {
     @Autowired
     private CommandeService commandeService;
@@ -36,7 +42,9 @@ public class CommandeController {
     @Autowired
     private ProduitService produitService;
 
-    //Commandes
+    /**
+     * Commandes
+     */
     @GetMapping("/commandes")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     public ResponseEntity<?> getCommandes() {
@@ -71,35 +79,61 @@ public class CommandeController {
     }
 
 
-    //Obtenir tous les détails de commandes.
+    /**
+     * Obtenir tous les détails de commandes.
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/commandes/details")
     public ResponseEntity<?> getAllCommandeDetails() {
         return ResponseEntity.ok(commandeDetailService.getCommandeDetails());
     }
 
-    //Obtenir une commandeDetail avec son idCommande.
+
+    /**
+     * Obtenir une commandeDetail avec son idCommande.
+     *
+     * @param id
+     * @return
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/commandes/{id}/details")
     public ResponseEntity<?> getCommandeDetailByIdCommande(@PathVariable Long id) {
         return ResponseEntity.ok(commandeDetailService.getCommandeDetailByCommandeId(id));
     }
 
-    //Obtenir une CommandeDetail avec son id_CommandeDetail
+    /**
+     * Obtenir une CommandeDetail avec son id_CommandeDetail
+     *
+     * @param id
+     * @return CommandeDetail
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/commandes/details/{id}")
     public ResponseEntity<?> getCommandeDetailById(@PathVariable Long id) {
         return ResponseEntity.ok(commandeDetailService.getCommandeDetail(id));
     }
 
-    //Sauvegarder un détail de commande.
+
+    /**
+     * Sauvegarder un détail de commande.
+     *
+     * @param commandeDetail
+     * @return la CommandeDetail
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @PostMapping("/commandes/details")
     public ResponseEntity<?> saveCommandeDetail(@RequestBody CommandeDetail commandeDetail) {
         return ResponseEntity.ok(commandeDetailService.saveCommandeDetail(commandeDetail));
     }
 
-    //Supprimer un détail de commande.
+
+    /**
+     * Supprimer un détail de commande.
+     *
+     * @param id
+     * @return
+     * @throws Exception si la CommandeDetail à supprimer n'existe pas
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANSIATEUR')")
     @ResponseBody
     @DeleteMapping("/commandes/details/{id}")
@@ -113,19 +147,32 @@ public class CommandeController {
     }
 
 
-    //commandesProducteur.
+    /**
+     * @return toutes les CommandeProducteur
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANSIATEUR')")
     @GetMapping("/commandes/producteurs")
     public ResponseEntity<?> getAllCommandeProducteur() {
         return ResponseEntity.ok(commandeProducteurService.getCommandeProducteurs());
     }
 
+    /**
+     * @param commandeProducteur
+     * @return la commande producteur enregistrée
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @PostMapping("/commandes/producteurs")
     public ResponseEntity<?> saveCommandeProducteur(@RequestBody CommandeProducteur commandeProducteur) {
         return ResponseEntity.ok(commandeProducteurService.saveCommandeProducteur(commandeProducteur));
     }
 
+    /**
+     * Supprime la commande producteur via son id
+     *
+     * @param id
+     * @return un messige si la CommandeProducteur à bien été supprimé
+     * @throws Exception si la CommandeProducteur n'existe pas
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @ResponseBody
     @DeleteMapping("/commandes/producteurs/{id}")
@@ -138,6 +185,10 @@ public class CommandeController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * @param id
+     * @return Toutes les Commande d'un client
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/commandes/client/{id}")
     public ResponseEntity<?> getCommandesByClientId(@PathVariable Long id) {
@@ -145,7 +196,12 @@ public class CommandeController {
     }
 
 
-    //obtient les commandes par producteur et toutes les commandes details et producteur associées
+    /**
+     * Cherche les commandeInfo par producteur et toutes les commandes details et producteur associées
+     *
+     * @param id
+     * @return les CommandeInfo d'un producteur.
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole('PRODUCTEUR')")
     @GetMapping("/commandesInfo/producteur/{id}")
     public ResponseEntity<?> getCommandesInfoByProducteurId(@PathVariable Long id) {
@@ -166,6 +222,12 @@ public class CommandeController {
         return ResponseEntity.ok(commandesInfo);
     }
 
+    /**
+     * Récupère une commandeInfo via l'id de sa Commande
+     *
+     * @param id
+     * @return la COmmandeInfo constituée de sa Commande, ses COmmandesDetail et CommandeProducteur.
+     */
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/commandes/info/{id}")
     public ResponseEntity<?> getOrderInfoById(@PathVariable Long id) {
@@ -204,7 +266,6 @@ public class CommandeController {
         return ResponseEntity.ok(orderDetailsResponse);
     }
 
-
     /**
      * Mise a jour totale de la commande, met le stock a jour
      *
@@ -221,13 +282,13 @@ public class CommandeController {
             System.out.println(commandeInfo1.getCommandesProducteur().isEmpty());
             System.out.println(commandeInfo1.getCommandesDetails().isEmpty());
             //les verifications sont passées pour l'update
-                commandeService.saveCommande(commandeInfo.getCommande());
-                for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
-                    commandeDetailService.saveCommandeDetail(cd);
-                }
-                for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
-                    commandeProducteurService.saveCommandeProducteur(cp);
-                }
+            commandeService.saveCommande(commandeInfo.getCommande());
+            for (CommandeDetail cd : commandeInfo.getCommandesDetails()) {
+                commandeDetailService.saveCommandeDetail(cd);
+            }
+            for (CommandeProducteur cp : commandeInfo.getCommandesProducteur()) {
+                commandeProducteurService.saveCommandeProducteur(cp);
+            }
             return ResponseEntity.ok().body(commandeInfo);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

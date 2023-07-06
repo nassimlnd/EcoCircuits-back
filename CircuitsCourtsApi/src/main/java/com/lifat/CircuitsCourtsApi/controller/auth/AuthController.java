@@ -33,6 +33,10 @@ import java.util.stream.Collectors;
 @RestController
 @Slf4j
 @RequestMapping("/api/auth")
+/**
+ * Gère l'authentification à l'api et la création d'un compte.
+ * Pour pouvoir communiquer avec l'api il faut avoir un compte.
+ */
 public class AuthController {
 
     @Autowired
@@ -50,6 +54,12 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    /**
+     * Valide ou non la connexion à l'api
+     * Lors de la validation crée un JWT et l'encode pour sécuriser la discution avec l'utilisateur connecté.
+     * @param loginRequest
+     * @return le JWT
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -72,6 +82,11 @@ public class AuthController {
                 roles));
     }
 
+    /**
+     * crée un compte utilisateur puis lui attribue son rôle et ses privlièges.
+     * @param signUpRequest
+     * @return un message de validation de la creation du compte.
+     */
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {

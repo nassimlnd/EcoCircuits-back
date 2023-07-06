@@ -18,6 +18,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
+/**
+ * End point de l'api qui gère le côté client.
+ * Le nom des méthodes indique leurs fonctionnement.
+ */
 public class ClientController {
 
 

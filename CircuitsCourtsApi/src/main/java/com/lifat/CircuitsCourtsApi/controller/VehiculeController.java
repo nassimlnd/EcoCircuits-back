@@ -12,6 +12,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
+/**
+ * End point de l'api pour les véhicules.
+ * Le nom des méthodes décrit leurs fonctionnement.
+ */
 public class VehiculeController {
 
     @Autowired

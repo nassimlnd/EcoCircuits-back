@@ -11,6 +11,10 @@ import java.util.ArrayList;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
+/**
+ * End point de l'api pour les tournées.
+ * Le nom des méthodes décrit leurs fonctionnement
+ */
 public class TourneeController {
     @Autowired
     private TourneeService tourneeService;
