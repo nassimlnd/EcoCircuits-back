@@ -105,18 +105,4 @@ public class ProduitController {
         return ResponseEntity.ok().body(updateProduit);
     }
 
-
-    /**
-     * Récupère tous les produits d'une commande et leur quantité
-     * @param id id de la commande
-     * @return les produits de la commande
-     */
-    /*@PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole ('PRODUCTEUR')")
-    @GetMapping("/produits/commande/{id}")
-    public ResponseEntity<?> getProduitsByCommande(@PathVariable Long id){
-        Collection<Produit> produits =  produitService.getProduitsByCommande(id);
-        return ResponseEntity.ok().body(produits);
-    }*/
-
-
 }

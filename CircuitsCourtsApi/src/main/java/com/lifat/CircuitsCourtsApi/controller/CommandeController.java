@@ -119,19 +119,6 @@ public class CommandeController {
     public ResponseEntity<?> getAllCommandeProducteur() {
         return ResponseEntity.ok(commandeProducteurService.getCommandeProducteurs());
     }
-/*
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
-    @GetMapping("/commandes/producteurs/{id}")
-    public ResponseEntity<?> getCommandeProducteurById(@PathVariable Long id) {
-        return ResponseEntity.ok(commandeProducteurService.getCommandeProducteur(id));
-    }
-
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
-    @GetMapping("/commandes/{id}/producteur")
-    public ResponseEntity<?> getCommandeProducteurByCommandeDetail(@PathVariable Long id) {
-        return ResponseEntity.ok(commandeProducteurService.getCommandeProducteurByCommandeDetail(id));
-    }
-    */
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @PostMapping("/commandes/producteurs")
@@ -158,24 +145,6 @@ public class CommandeController {
     }
 
 
-    /*
-    @GetMapping("/commandes/byProducteursId/{id}")
-        public ResponseEntity<?> getCommandesByProducteurId(@PathVariable Long id, @RequestParam String key) throws Exception {
-            if (jwtUtil.isValidToken(key)){
-                return ResponseEntity.ok(commandeProducteurService.getCommandeByProducteurId(id));
-        }else return ResponseEntity.badRequest().body("Invalid token");
-    }
-
-
-
-    //obtient les commandesProd par producteur
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole('PRODUCTEUR')")
-    @GetMapping("/producteurs/{id}/commandes")
-    public ResponseEntity<?> getCommandesProdByProdId(@PathVariable Long id){
-            return ResponseEntity.ok(commandeProducteurService.getCommandesProducteurByIdProducteur(id));
-    }
-     */
-
     //obtient les commandes par producteur et toutes les commandes details et producteur associées
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR') or hasRole('PRODUCTEUR')")
     @GetMapping("/commandesInfo/producteur/{id}")
@@ -197,26 +166,6 @@ public class CommandeController {
         return ResponseEntity.ok(commandesInfo);
     }
 
-    /**
-     * recupere toutes les commandes de la bd avec leurs commandesDetails et commandesProducteurs
-     * et crée une commande info pour chaque commande.
-     *
-     * @return collection de commandeInfo
-     */
-    /*
-    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIASTEUR')")
-    @GetMapping("/commandesInfo")
-    public ResponseEntity<Collection<CommandeInfo>> getCommandesInfo() {
-        Collection<CommandeInfo> commandeInfos = new ArrayList<>();
-        Collection<Commande> commandes = (Collection<Commande>) commandeService.getCommandes();
-        for (Commande c : commandes) {
-            CommandeInfo oneCommandeInfo = new CommandeInfo(c, commandeDetailService, commandeProducteurService);
-            oneCommandeInfo.fillWithCommandesDetails();
-            oneCommandeInfo.fillWithCommandesProducteur();
-            commandeInfos.add(oneCommandeInfo);
-        }
-        return ResponseEntity.ok(commandeInfos);
-    }*/
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANISATEUR')")
     @GetMapping("/commandes/info/{id}")
     public ResponseEntity<?> getOrderInfoById(@PathVariable Long id) {
@@ -257,7 +206,7 @@ public class CommandeController {
 
 
     /**
-     * mise a jour totale de la commande, met le stock a jour
+     * Mise a jour totale de la commande, met le stock a jour
      *
      * @param id de la commande
      * @return la nouvelle commande
@@ -319,13 +268,12 @@ public class CommandeController {
         }
         return ResponseEntity.ok().body(commandeInfo);
 
-        //} catch (Exception e) {
-        //  return ResponseEntity.badRequest().body(e.getMessage());
-        //}
+
     }
 
     /**
-     * Supprime par le biais d'une commande :  - la commande
+     * Supprime par le biais d'une commande :
+     * - la commande
      * - les commandes details associées
      * - les commandes producteurs associées aux commandes details
      * Met a jour le stock
@@ -363,7 +311,6 @@ public class CommandeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 
 }
 
